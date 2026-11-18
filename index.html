@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 微醺图鉴 v8（2026-11-13）：339 款鸡尾酒、13 类基酒（含葡萄酒、啤酒、清酒与烧酒、无酒精）；同一款酒不同出处的配方（含上田和男《鸡尾酒笔记》和 Death & Co《Modern Classic Cocktails》两本书的配方）、成品酒精度估算、家族与变体、技法与自制原料；按风味找酒、中英双语、手机适配；单文件、无外部资源，断网可用。由 scratch/build.py 从 src/ 生成，要改请改源文件，再重新构建。 -->
+<!-- 微醺图鉴 v9（2026-11-16）：339 款鸡尾酒、13 类基酒（含葡萄酒、啤酒、清酒与烧酒、无酒精）；舞台动画照每款酒的做法演一遍（摇和、调和、兑和、捣压、搅和、分层、加热，调好了再倒进杯子），做法下面列出用到的手法；同一款酒不同出处的配方（含上田和男《鸡尾酒笔记》和 Death & Co《Modern Classic Cocktails》两本书的配方）、成品酒精度估算、家族与变体、技法与自制原料；按风味找酒、中英双语、手机适配；单文件、无外部资源，断网可用。由 scratch/build.py 从 src/ 生成，要改请改源文件，再重新构建。 -->
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -225,7 +225,7 @@ body:not([data-view="home"]) .searchwrap { margin-top: 16px; }
 /* ---------- 详情 ---------- */
 .crumb { margin-bottom: 20px; }
 .detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px 40px; }
-.stage-col { width: 100%; max-width: 330px; max-width: min(330px, max(170px, calc((100svh - 112px) * 6 / 7))); margin: 0 auto; }
+.stage-col { position: relative; width: 100%; max-width: 330px; max-width: min(330px, max(170px, calc((100svh - 112px) * 6 / 7))); margin: 0 auto; }
 .stage {
   position: relative; aspect-ratio: 6 / 7; overflow: hidden;
   background: var(--tint, #eee); border: 3px solid var(--ink); border-radius: 30px; box-shadow: 7px 7px 0 var(--pop);
@@ -236,8 +236,9 @@ body:not([data-view="home"]) .searchwrap { margin-top: 16px; }
   animation: raySpin 90s linear infinite;
 }
 .stage .art { position: absolute; inset: 0; }
+/* 按钮挂在舞台的右下角外沿（不在 .stage 里面，不被它裁掉）：舞台再小，也不挡杯子 */
 .stage-btn {
-  position: absolute; right: 12px; bottom: 12px; width: 42px; height: 42px; display: grid; place-items: center;
+  position: absolute; right: -9px; bottom: -9px; z-index: 2; width: 42px; height: 42px; display: grid; place-items: center;
   border: 2.5px solid var(--sun-ink); border-radius: 50%; background: #fff; color: var(--sun-ink); box-shadow: 3px 3px 0 var(--sun-ink);
   transition: transform .12s var(--ease-out), box-shadow .12s var(--ease-out);
 }
@@ -344,6 +345,13 @@ button.tag:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--pop)
 .est-how summary::-webkit-details-marker { display: none; }
 .est-how p { margin-top: 4px; color: var(--muted); }
 
+/* 手法：一串操作，用小箭头连起来 */
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 0; margin: 0 0 12px; padding: 0; list-style: none; }
+.flow li { display: inline-flex; align-items: center; }
+/* 箭头跟在前一个标签后面：换行以后每一行都从标签开始，左边对齐 */
+.flow li:not(:last-child)::after { content: ""; width: 7px; height: 7px; margin: 0 11px 0 6px; border-top: 2.5px solid var(--muted); border-right: 2.5px solid var(--muted); transform: rotate(45deg); opacity: .7; }
+.flow span.tag { border-color: var(--line); box-shadow: none; padding-left: 12px; }
+.flow span.tag:hover { transform: none; box-shadow: none; background: var(--surface); color: inherit; }
 .steps li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; padding: 8px 0; animation: rowIn .36s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms + .2s); }
 .steps .num { width: 34px; height: 34px; display: grid; place-items: center; border: 2.5px solid var(--ink); border-radius: 50%; background: var(--sun); color: var(--sun-ink); font-weight: 800; font-size: 15px; }
 .steps p { padding-top: 4px; }
@@ -513,8 +521,8 @@ html:lang(en) .fg-label { font-size: 12px; line-height: 1.25; letter-spacing: .0
 @keyframes swing { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
 
 /* ---------- 插画动画 ---------- */
-.art .a-drop { transform-box: view-box; transform-origin: 120px 252px; animation: aDrop .56s var(--ease-out) both; }
-.art .a-shadow { transform-box: fill-box; transform-origin: center; animation: aShadow .5s var(--ease-out) both; }
+.art .a-drop { transform-box: view-box; transform-origin: 120px 252px; animation: aDrop .56s var(--ease-out) var(--d, 0s) both; }
+.art .a-shadow { transform-box: fill-box; transform-origin: center; animation: aShadow .5s var(--ease-out) var(--d, 0s) both; }
 /* 酒液上升：--h 上升距离，--d 开始时间，--t 时长（分层的酒一层接一层） */
 .art .a-rise { animation: aRise var(--t, .95s) cubic-bezier(.5, .05, .3, 1) var(--d, .34s) both; }
 .art .a-rise-c { animation: aRiseC var(--t, .95s) cubic-bezier(.5, .05, .3, 1) var(--d, .34s) both; }
@@ -536,6 +544,83 @@ html:lang(en) .fg-label { font-size: 12px; line-height: 1.25; letter-spacing: .0
 .art .a-twinkle { transform-box: fill-box; transform-origin: center; animation: aTwinkle 2.6s ease-in-out infinite both; animation-delay: var(--d, 1.4s); }
 .art .a-steam { animation: aSteam 3.2s ease-in-out infinite both; animation-delay: var(--d, 1.5s); }
 .art .a-wave { animation: aWave 2.6s linear infinite; }
+/* 调制分镜（art_prep.js）：镜头、工具的登场退场和姿态、各种动作。时间都由 --d（开始）、--t（时长）、--n（次数）给 */
+.art .a-cam { transform-origin: 120px 252px; animation: aCam .5s cubic-bezier(.5, 0, .2, 1) var(--d, 3s) both; }
+.art .a-pop { animation: aPop .26s ease-out var(--d, 0s) both; }
+.art .a-out { animation: aOut .26s ease-in var(--d, 99s) both; }
+.art .a-pose { animation: aPose var(--t, .7s) cubic-bezier(.3, .7, .3, 1) var(--d, 2s) both; }
+.art .a-arc { animation: aArc var(--t, .7s) linear var(--d, 99s) both; }
+.art .a-level { animation: aLevel var(--t, .7s) cubic-bezier(.3, .7, .3, 1) var(--d, 2s) both; }
+.art .a-tip { animation: aPose .2s cubic-bezier(.4, 0, .2, 1) var(--d, 1s) both, aPoseBack .2s cubic-bezier(.4, 0, .2, 1) var(--d2, 2s) forwards; }
+.art .a-tipn { animation: aTipN var(--t, .48s) ease-in-out var(--d, 1s) both; animation-iteration-count: var(--n, 1); }
+.art .a-shake { transform-origin: 0px 53px; animation: aShake var(--t, 1s) linear var(--d, 1.5s) both; }
+.art .a-blink { animation: aBlink var(--t, 1s) linear var(--d, 1.5s) both; }
+.art .a-hop { animation: aHop var(--t, .5s) ease-in-out var(--d, 2s) both; }
+.art .a-capoff { animation: aCapOff .3s ease-in var(--d, 99s) both; }
+.art .a-up { animation: aUp .26s ease-in var(--d, 99s) both; }
+.art .a-press { animation: aPress var(--t, .72s) ease-in-out var(--d, 1s) both; }
+.art .a-stir { animation: aStir var(--t, .35s) linear var(--d, 1s) both; animation-iteration-count: var(--n, 3); }
+.art .a-lift { animation: aLift var(--t, .5s) ease-in-out var(--d, 1s) both; }
+.art .a-spin { animation: aSpin var(--t, .22s) linear var(--d, 1s) both; animation-iteration-count: var(--n, 4); }
+.art .a-orbit { animation: aOrbit var(--t, .35s) ease-in-out var(--d, 99s) both; animation-iteration-count: var(--n, 3); }
+.art .a-step { animation: aStep var(--t, .3s) cubic-bezier(.5, .05, .3, 1) var(--d, 1s) both; }
+.art .a-step-c { animation: aStepC var(--t, .3s) cubic-bezier(.5, .05, .3, 1) var(--d, 1s) both; }
+.art .a-sink { animation: aSink var(--t, 1s) cubic-bezier(.3, .7, .3, 1) var(--d, 99s) both; }
+.art .a-buzz { animation: aBuzz .08s linear var(--d, 2s) both; animation-iteration-count: var(--n, 10); }
+.art .a-film { animation: aFilm 1.1s ease-in-out var(--d, 1s) both; }
+/* 横移和倾斜比抬起晚三成时间开始（和 a-pose / a-level / a-sink 叠着用，只改时间，要写在它们后面） */
+.art .a-late { animation-duration: calc(var(--t, .7s) * .7); animation-delay: calc(var(--d, 2s) + var(--t, .7s) * .3); animation-timing-function: cubic-bezier(.45, 0, .3, 1); }
+@keyframes aCam { from { transform: translate(var(--cx, 0px), 0px) scale(var(--ck, 1)); } to { transform: translate(0px, 0px) scale(1); } }
+@keyframes aPop { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+@keyframes aOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+@keyframes aPose {
+  from { transform: translate(var(--x0), var(--y0)) rotate(var(--r0, 0deg)) scale(var(--s0, 1)); }
+  to { transform: translate(var(--x1), var(--y1)) rotate(var(--r1, 0deg)) scale(var(--s1, 1)); }
+}
+@keyframes aPoseBack {
+  from { transform: translate(var(--x1), var(--y1)) rotate(var(--r1, 0deg)) scale(var(--s1, 1)); }
+  to { transform: translate(var(--x0), var(--y0)) rotate(var(--r0, 0deg)) scale(var(--s0, 1)); }
+}
+@keyframes aTipN {
+  0%, 100% { transform: translate(var(--x0), var(--y0)) rotate(var(--r0, 0deg)); }
+  30%, 73% { transform: translate(var(--x1), var(--y1)) rotate(var(--r1, -116deg)); }
+}
+/* 工具从台面到杯口上方的上下那一半：前一半时间抬到比终点还高（--up），后一半落到位 */
+@keyframes aArc {
+  0% { transform: translateY(var(--dy, 0px)); animation-timing-function: cubic-bezier(.2, .7, .3, 1); }
+  55% { transform: translateY(var(--up, -12px)); animation-timing-function: cubic-bezier(.4, 0, .4, 1); }
+  100% { transform: translateY(0px); }
+}
+@keyframes aLevel { from { transform: rotate(0deg); } to { transform: rotate(var(--r1, 104deg)); } }
+@keyframes aShake {
+  0%, 100% { transform: none; }
+  9% { transform: translate(-2px, -30px) rotate(-26deg); }
+  18%, 36%, 54%, 72%, 90% { transform: translate(8px, -44px) rotate(-18deg); }
+  27%, 45%, 63%, 81% { transform: translate(-6px, -24px) rotate(-31deg); }
+}
+@keyframes aBlink { 0%, 100% { opacity: 0; } 12%, 40%, 68%, 90% { opacity: 1; } 26%, 54%, 80% { opacity: .15; } }
+@keyframes aHop { 0%, 100% { transform: none; } 30%, 70% { transform: translateY(-38px); } }
+@keyframes aCapOff { from { opacity: 1; transform: none; } to { opacity: 0; transform: translate(14px, -30px) rotate(40deg); visibility: hidden; } }
+@keyframes aUp { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(var(--up, -34px)); visibility: hidden; } }
+@keyframes aPress {
+  0%, 33%, 67%, 100% { transform: translateY(var(--lift, -10px)); }
+  17%, 83% { transform: translateY(0px) rotate(-8deg); }
+  50% { transform: translateY(0px) rotate(8deg); }
+}
+@keyframes aStir {
+  0%, 100% { transform: translate(calc(var(--a, 6px) * -1), 0px) rotate(5deg); }
+  25% { transform: translate(0px, 1.5px) rotate(0deg); }
+  50% { transform: translate(var(--a, 6px), 0px) rotate(-5deg); }
+  75% { transform: translate(0px, -1.5px) rotate(0deg); }
+}
+@keyframes aLift { 0%, 100% { transform: none; } 50% { transform: translateY(var(--up, -14px)); } }
+@keyframes aSpin { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(-1); } }
+@keyframes aOrbit { 0%, 100% { transform: none; } 25% { transform: translateX(var(--a, 5px)); } 75% { transform: translateX(calc(var(--a, 5px) * -1)); } }
+@keyframes aStep { from { transform: translateY(var(--h)); } to { transform: translateY(0); } }
+@keyframes aStepC { from { transform: translateY(calc(var(--h) * -1)); } to { transform: translateY(0); } }
+@keyframes aSink { from { transform: translateY(0); } to { transform: translateY(var(--h)); } }
+@keyframes aBuzz { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(1.3px); } 75% { transform: translateX(-1.3px); } }
+@keyframes aFilm { 0%, 100% { opacity: 0; } 35%, 62% { opacity: .36; } }
 @keyframes aDrop {
   0% { opacity: 0; transform: translateY(-36px) scale(.94, 1.06); }
   52% { opacity: 1; transform: translateY(0) scale(1.06, .92); }
@@ -572,7 +657,7 @@ html:lang(en) .fg-label { font-size: 12px; line-height: 1.25; letter-spacing: .0
   100% { stroke-dashoffset: calc(var(--len) * -1); }
 }
 @keyframes aPlop { 0% { opacity: 0; transform: translateY(-18px) scale(.3); } 55% { opacity: 1; } 100% { opacity: 1; transform: none; } }
-@keyframes aIce { 0% { opacity: 0; transform: translateY(-46px); } 40% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+@keyframes aIce { 0% { opacity: 0; transform: translateY(var(--from, -46px)); } 40% { opacity: 1; } 100% { opacity: 1; transform: none; } }
 @keyframes aBob { 0%, 100% { transform: none; } 50% { transform: translateY(-2.2px) rotate(2deg); } }
 @keyframes aBub { 0% { opacity: 0; transform: translateY(0); } 12% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; transform: translateY(var(--rise, -40px)); } }
 @keyframes aTwinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(40deg); } }
@@ -6274,6 +6359,197 @@ const GUIDE_BY_ID = {};
 GUIDE.tech.concat(GUIDE.home).forEach(function (g) { GUIDE_BY_ID[g.id] = g; });
 
 /* ============================================================
+ * 调制手法：把每款酒的做法归成「大类 → 细分 → 一串具体操作」。
+ *   大类就是 method（摇和 / 调和 / 兑和 / 捣压 / 搅和 / 分层 / 加热）；
+ *   细分看出品的样子（不加冰 / 冰块 / 碎冰 / 加满气泡 / 热饮……）；
+ *   具体操作（干摇、壶中捣压、双重过滤、洗杯、漂浮……）从做法的中文步骤、材料和外观数据里认出来，
+ *   认不准的在 PREP_FIX 里逐款写明。
+ * 详情页「做法」标题下面的那一行手法、舞台动画的分镜、scratch/TECHNIQUES.md 的统计，都出自 prepOf()。
+ * ============================================================ */
+
+/* 具体操作：id → [中文, 英文, 技法页条目 id（可省）] */
+const PREP_OP = {
+  rim: ['做杯边', 'Rim the glass', 'rim'],
+  rinse: ['洗杯', 'Rinse the glass', 'rinse'],
+  warm: ['温杯', 'Warm the glass', 'heat'],
+  muddle: ['捣压', 'Muddle', 'muddle'],
+  dissolve: ['先搅溶', 'Stir to dissolve'],
+  dry: ['干摇', 'Dry shake', 'dry-shake'],
+  rdry: ['反向干摇', 'Reverse dry shake', 'dry-shake'],
+  shake: ['加冰摇匀', 'Shake with ice', 'shake'],
+  whip: ['碎冰快摇', 'Whip shake', 'shake'],
+  stir: ['加冰搅拌', 'Stir with ice', 'stir'],
+  strain: ['过滤', 'Strain'],
+  fine: ['双重过滤', 'Double-strain', 'double-strain'],
+  dump: ['连冰倒出', 'Pour unstrained'],
+  build: ['杯中兑和', 'Build in the glass', 'build'],
+  hot: ['冲入热饮', 'Add the hot liquid', 'heat'],
+  top: ['加满', 'Top up'],
+  lift: ['轻搅一下', 'One gentle stir', 'build'],
+  stirin: ['杯中搅拌', 'Stir in the glass', 'build'],
+  swizzle: ['搓拌', 'Swizzle', 'swizzle'],
+  churn: ['搅到结霜', 'Churn until frosted', 'swizzle'],
+  float: ['漂浮', 'Float', 'layer'],
+  sink: ['沉底', 'Sink'],
+  drizzle: ['淋面', 'Drizzle'],
+  layer: ['分层', 'Layer', 'layer'],
+  blend: ['搅拌机打匀', 'Blend', 'blend'],
+  flash: ['点动打碎', 'Flash-blend', 'blend'],
+  heat: ['小火加热', 'Warm in a pan', 'heat'],
+  blaze: ['点火对倒', 'Blaze and pour', 'heat'],
+  drop: ['沉入小杯', 'Drop the shot'],
+  flame: ['火焰橙皮', 'Flamed peel', 'peel']
+};
+
+/* 细分：id → [中文, 英文]。前缀就是大类 */
+const PREP_SUB = {
+  'shake-up': ['摇和，滤入冰镇杯', 'Shaken and served up'],
+  'shake-rocks': ['摇和，滤在冰块上', 'Shaken, served on the rocks'],
+  'shake-crushed': ['摇和，配碎冰', 'Shaken, served on crushed ice'],
+  'shake-top': ['摇和，再加满气泡', 'Shaken, then topped with bubbles'],
+  'stir-up': ['调和，滤入冰镇杯', 'Stirred and served up'],
+  'stir-rocks': ['调和，滤在冰块上', 'Stirred, served on the rocks'],
+  'stir-top': ['调和，再加满气泡', 'Stirred, then topped with bubbles'],
+  'build-spirit': ['兑和：烈酒加冰搅匀', 'Built: spirits stirred on ice'],
+  'build-highball': ['兑和：加冰兑气泡', 'Built: over ice with a fizzy mixer'],
+  'build-long': ['兑和：加冰兑果汁或茶', 'Built: over ice with a still mixer'],
+  'build-sparkling': ['兑和：不加冰的起泡酒和啤酒', 'Built: sparkling wine or beer, no ice'],
+  'build-neat': ['兑和：不加冰直接倒', 'Built: poured neat'],
+  'build-crushed': ['兑和：碎冰搓拌', 'Built: swizzled on crushed ice'],
+  'build-hot': ['兑和：热饮', 'Built: hot'],
+  'muddle-crushed': ['捣压，配碎冰', 'Muddled, on crushed ice'],
+  'muddle-rocks': ['捣压，配冰块', 'Muddled, on the rocks'],
+  'blend-smooth': ['搅和：打成冰沙', 'Blended smooth'],
+  'blend-flash': ['搅和：点动几秒', 'Flash-blended'],
+  'blend-noice': ['搅和：不加冰', 'Blended without ice'],
+  'layer-shot': ['分层：小杯', 'Layered shot'],
+  'layer-beer': ['分层：啤酒', 'Layered beer'],
+  'heat-pan': ['加热：小锅温热', 'Heated in a pan'],
+  'heat-blaze': ['加热：点火对倒', 'Blazed']
+};
+
+/* 认不准的逐款更正（只写要改的字段） */
+const PREP_FIX = {
+  'gin-gin-mule': { top: null },                 // 自制的不带气姜汁啤酒，和别的材料一起摇
+  'mezcal-mule': { top: 'ginger-beer' },
+  'ramos-fizz': { top: 'soda', dry: 2 },
+  'sgroppino': { agit: 'brief' },
+  'somaek': { agit: 'none' },
+  'dawa': { agit: 'none' },
+  'sangria': { agit: 'brief' },
+  'mauresque': { agit: 'none' },
+  'canchanchara': { rinse: false },             // 蜂蜜水挂杯，不算洗杯
+  'blood-and-sand': { flame: false },           // 火焰橙皮只是“讲究的做法”
+  'blue-blazer': { strain: 'pour' },
+  'canelazo': { strain: 'pour' },
+  'tamagozake': { strain: 'pour' },
+  'bombardino': { strain: 'pour' }
+};
+
+function prepOf(c, r) {
+  r = r || c;
+  const glass = r.glass || c.glass, A = c.art || {}, V = VESSELS[glass] || {};
+  const steps = (r.steps && Array.isArray(r.steps[0]) ? r.steps.map(function (s) { return s[0]; }) : r.steps || c.steps) || [];
+  const txt = steps.join(' / '), ing = r.ing || c.ing;
+  /* 别的出处的版本没写调法、却自己写了步骤的，从步骤里认 */
+  const method = r.method || (r !== c && r.steps ? (/搅拌机/.test(txt) ? 'blend' : /摇酒壶|摇匀|摇几下|干摇/.test(txt) ? 'shake' : /调酒杯/.test(txt) ? 'stir' : c.method) : c.method);
+  const tok = (A.g || []).map(function (t) { return t.split(/[:@]/)[0]; });
+  const has = function (re) { return re.test(txt); };
+  const P = { main: method, tool: null };
+  const toolM = method === 'shake' || method === 'stir';
+
+  /* 杯子的准备 */
+  P.rim = tok.indexOf('salt') >= 0 || tok.indexOf('sugar') >= 0 || has(/蘸上|珊瑚边/);
+  P.rinse = has(/润湿杯壁|洗过的杯|挂在杯壁上|挂满杯底/);
+  P.warm = has(/温杯|烫热|烫过/);
+  /* 出品时杯里的冰（看的是默认配方的插画；别的版本自己写了 ice / glass 的按它的来） */
+  const iceLook = r !== c && (r.ice || r.glass) ? (r.ice === 'crushed' || /装满碎冰|碎冰上/.test(txt) ? 'crushed' : r.ice === 'none' ? '' : /装[有满]大?冰块|冰块上|冰球/.test(txt) ? 'cubes' : '') : (A.ice || '');
+  /* 最后加满的那样带气的材料 */
+  P.top = null;
+  ing.forEach(function (row) { if (!P.top && FIZZY[row[0]] && row[3] !== '另杯上') P.top = row[0]; });
+  P.hot = method === 'heat' ? (has(/来回倒/) ? 'blaze' : 'pan') : has(/热水|滚水|热牛奶|热咖啡|趁热|滚烫/) ? 'pour' : null;
+  P.serve = iceLook === 'crushed' ? 'crushed' : iceLook === 'cubes' ? 'rocks' : iceLook ? 'big' : P.hot ? 'hot' : toolM || V.stem ? 'up' : 'neat';
+
+  /* 壶里 / 杯里的动作 */
+  P.mudTin = toolM && has(/捣|压几下|压一压|压碎/);
+  P.mudGlass = method === 'muddle' || (method === 'build' && has(/捣压|压碎/));
+  P.dissolve = toolM && has(/搅到糖溶解|搅到化开|搅到糖化开/);
+  P.dry = has(/再不加冰干摇/) ? 2 : has(/干摇/) ? 1 : 0;
+  P.whip = method === 'shake' && has(/快速摇几下|一把碎冰|一小把碎冰|摇到碎冰/);
+  P.strain = toolM ? (has(/双重过滤/) ? 'fine' : has(/不过滤|连冰/) ? 'dump' : 'single') : method === 'blend' ? 'pour' : method === 'heat' ? (has(/滤进/) ? 'single' : 'pour') : null;
+  P.blend = method === 'blend' ? (has(/不加冰/) ? 'noice' : has(/点动|打几秒|快速打|打 5 秒/) ? 'flash' : 'smooth') : null;
+
+  /* 倒进杯子以后还搅不搅 */
+  const tail = (toolM ? steps.slice(-2).join(' / ') : txt).replace(/不用搅拌|不要搅拌|不用搅|喝之前搅匀|自己用木棒搅|搅得越多/g, ''), hasT = function (re) { return re.test(tail); };
+  P.agit = hasT(/搓/) ? 'swizzle'
+    : hasT(/搅拌到杯壁结霜|搅到杯壁起霜|从下往上用力搅匀/) ? 'churn'
+    : hasT(/提拉|提一下/) ? 'lift'
+    : !toolM && hasT(/搅拌 \d|搅拌十几圈|慢慢搅拌|搅 \d|搅十几圈/) ? 'stir'
+    : (toolM ? hasT(/加满，轻轻搅|轻轻搅一下|轻轻搅拌均匀/) : hasT(/轻轻搅|搅匀|搅拌均匀|轻轻搅拌|搅几下|搅拌几下|搅一下|搅拌。|搅拌，|搅到溶解|搅到化开|边倒边搅/)) ? 'brief' : 'none';
+
+  /* 最后才加的那一层 */
+  const kind = A.liq && A.liq.kind;
+  P.after = method === 'layer' ? null
+    : has(/漂一层|漂在|浮在上面|勺背|吧勺背面|浇在上面|浇在冰块上/) || (kind === 'float' && has(/留到最后/)) ? 'float'
+    : has(/沉到杯底|自己沉/) || (kind === 'sink' && has(/最后倒入/)) ? 'sink'
+    : has(/淋在|淋上/) ? 'drizzle' : null;
+  P.drop = has(/沉进啤酒|掉进啤酒/);
+  P.flame = P.hot !== 'blaze' && (tok.indexOf('flame') >= 0 || has(/隔着火苗|点燃橙皮/));
+
+  const fix = r === c ? PREP_FIX[c.id] : null;
+  if (fix) Object.keys(fix).forEach(function (k) { P[k] = fix[k]; });
+
+  /* 用什么调 */
+  P.tool = method === 'shake' ? 'shaker' : method === 'stir' ? 'mixglass' : method === 'blend' ? 'blender' : method === 'heat' ? (P.hot === 'blaze' ? 'mugs' : 'pan') : null;
+
+  /* 细分 */
+  const iceSub = P.serve === 'crushed' ? 'crushed' : P.serve === 'up' || P.serve === 'neat' || P.serve === 'hot' ? 'up' : 'rocks';
+  if (toolM) P.sub = method + '-' + (P.top ? 'top' : method === 'stir' && iceSub === 'crushed' ? 'rocks' : iceSub);
+  else if (method === 'muddle') P.sub = 'muddle-' + (iceSub === 'crushed' ? 'crushed' : 'rocks');
+  else if (method === 'blend') P.sub = 'blend-' + P.blend;
+  else if (method === 'layer') P.sub = 'layer-' + (P.top || glass === 'pint' ? 'beer' : 'shot');
+  else if (method === 'heat') P.sub = 'heat-' + (P.hot === 'blaze' ? 'blaze' : 'pan');
+  else {
+    let still = 0;                                   // 不带气的大份材料（果汁、茶、水、奶）
+    ing.forEach(function (row) { const sp = SPEC[row[0]]; if (sp && !FIZZY[row[0]] && /^[jodm]$/.test(sp[3])) still += rowMl(row); });
+    P.sub = 'build-' + (P.hot ? 'hot' : iceSub === 'crushed' ? 'crushed' : iceSub === 'up' ? (P.top ? 'sparkling' : 'neat') : P.top ? 'highball' : still >= 45 ? 'long' : 'spirit');
+  }
+
+  /* 一串操作（按先后） */
+  const ops = [];
+  if (P.rim) ops.push('rim');
+  if (P.rinse) ops.push('rinse');
+  if (P.warm) ops.push('warm');
+  if (method === 'shake' || method === 'stir') {
+    if (P.mudTin) ops.push('muddle');
+    if (P.dissolve) ops.push('dissolve');
+    if (P.dry === 1) ops.push('dry');
+    ops.push(method === 'stir' ? 'stir' : P.whip ? 'whip' : 'shake');
+    if (P.dry === 2) ops.push('rdry');
+    ops.push(P.strain === 'fine' ? 'fine' : P.strain === 'dump' ? 'dump' : 'strain');
+  } else if (method === 'blend') ops.push(P.blend === 'flash' ? 'flash' : 'blend');
+  else if (method === 'layer') ops.push('layer');
+  else if (method === 'heat') { ops.push(P.hot === 'blaze' ? 'blaze' : 'heat'); if (P.strain === 'single') ops.push('strain'); }
+  else {
+    if (P.mudGlass) ops.push('muddle');
+    ops.push('build');
+    if (P.hot) ops.push('hot');
+  }
+  if (P.top && method !== 'layer') ops.push('top');
+  if (method !== 'layer' && method !== 'blend' && method !== 'heat') {
+    if (P.agit === 'swizzle') ops.push('swizzle');
+    else if (P.agit === 'churn') ops.push('churn');
+    else if (P.agit === 'stir') ops.push('stirin');
+    else if (P.agit === 'lift' || P.agit === 'brief') ops.push(toolM || P.top ? 'lift' : 'stirin');
+  }
+  if (P.after) ops.push(P.after);
+  if (P.drop) ops.push('drop');
+  if (P.flame) ops.push('flame');
+  P.ops = ops;
+  return P;
+}
+
+/* ============================================================
  * 双语：当前语言、界面文案、取“当前语言字段”的小工具、单位和数量的写法。
  * 数据里的英文正文在 en.js；这里只放界面文案和格式规则。
  * ============================================================ */
@@ -6302,7 +6578,10 @@ const UI = {
     flavorChipAria: function (name) { return '风味：' + name; },
     all: '全部酒单',
     allCount: function (n) { return n + ' 款鸡尾酒，点一杯看配方和做法'; },
-    pourAgain: '再倒一次',
+    pourAgain: '再调一次',
+    skipAnim: '跳到成品',
+    flow: '手法',
+    flowAria: '这个版本的调制手法，按先后',
     replay: '重播动画',
     viewSpirit: function (name) { return '查看：' + name; },
     artDrink: function (c) { return c.zh + ' ' + c.en + ' 插画'; },
@@ -6420,7 +6699,10 @@ const UI = {
     flavorChipAria: function (name) { return 'Flavor: ' + name; },
     all: 'All cocktails',
     allCount: function (n) { return n + ' cocktails. Pick one for the recipe and method.'; },
-    pourAgain: 'Pour again',
+    pourAgain: 'Make it again',
+    skipAnim: 'Skip to the finished drink',
+    flow: 'Technique',
+    flowAria: 'The techniques this version uses, in order',
     replay: 'Replay animation',
     viewSpirit: function (name) { return 'About ' + name; },
     artDrink: function (c) { return c.en + ' illustration'; },
@@ -6709,9 +6991,9 @@ function stageBg(svg, tint) {
   }
   add(svg, dots);
 }
-function sparkles(svg, pts, on) {
+function sparkles(svg, pts, on, t0) {
   pts.forEach(function (p, i) {
-    add(svg, put(gSpark(p[2]), p[0], p[1], 0, 1, on ? 'a-twinkle' : null, on ? { '--d': (1.3 + i * 0.55) + 's' } : null));
+    add(svg, put(gSpark(p[2]), p[0], p[1], 0, 1, on ? 'a-twinkle' : null, on ? { '--d': n1((t0 || 1.3) + i * 0.55) + 's' } : null));
   });
 }
 
@@ -6766,8 +7048,9 @@ function gEmblem(kind, fg) {
   }
 }
 function bottleBounds(sp) {
-  const b = BOTTLES[sp.id], side = b.bw + 12, top = b.nt - 36;
-  return { x: CX - side, y: top, w: side * 2, h: 260 - top };
+  /* 画框要包住瓶底的影子（比瓶身宽 14、比台面低 11）和球形瓶塞的顶 */
+  const b = BOTTLES[sp.id], side = b.bw + 15, top = b.nt - (b.cap === 'ball' ? 42 : 36);
+  return { x: CX - side, y: top, w: side * 2, h: 264 - top };
 }
 /* 详情页的大图是一张有名字的图片；卡片和搜索结果里的小图只是陪衬，名字由旁边的文字给出，对读屏隐藏 */
 function artLabel(svg, stage, label) {
@@ -6776,7 +7059,7 @@ function artLabel(svg, stage, label) {
 function bottleArt(sp, o) {
   o = o || {};
   const b = BOTTLES[sp.id], on = !!o.anim, uid = 'a' + (++ART_SEQ), B = bottleBounds(sp);
-  const fit = o.stage ? Math.min(1.16, 226 / B.h, 204 / B.w) : 1;
+  const fit = o.stage ? Math.min(1.16, 226 / (B.h - 4), 204 / B.w) : 1;
   SW = o.stage ? 5 / fit : o.px ? (o.line || 3) * Math.max(B.w, B.h) / o.px : 5.5;
   const svg = S('svg', {
     class: 'art',
@@ -6907,6 +7190,7 @@ const VESSELS = {
 const ICE_LAYOUT = {
   rocks: [[-21, 13, 29, -10], [18, 11, 28, 13], [-1, 39, 27, 6]],
   highball: [[-9, 13, 26, -12], [9, 37, 26, 10], [-8, 61, 26, 7], [8, 86, 26, -9], [-6, 110, 25, 12]],
+  flute: [[-4, 12, 16, -10], [4, 31, 16, 12], [-3, 50, 15, 6]],
   collins: [[-8, 13, 24, -12], [8, 37, 24, 10], [-7, 62, 24, 7], [7, 87, 24, -9], [-6, 111, 24, 12], [6, 134, 23, -6]],
   sling: [[-7, 13, 25, -12], [8, 37, 25, 10], [-6, 61, 24, 7], [6, 85, 23, -9], [-3, 108, 21, 12]],
   wine: [[-21, 13, 25, -14], [7, 9, 25, 10], [27, 24, 20, -6], [-5, 35, 24, 18]],
@@ -7315,6 +7599,517 @@ function gShard(size, rnd, solid) {
 }
 
 /* ============================================================
+ * 调制分镜：吧台工具和它们的动作（只在详情页的舞台动画里用）。
+ *
+ * 一杯酒的动画不再是“酒从画面外直接落进杯子”，而是照它的做法演一遍：
+ *   摇和  摇酒壶：量酒器倒料 → 加冰 → 盖上 → 摇（蛋清类先干摇）→ 斜过来滤进杯子（双重过滤的多一只细网）
+ *   调和  调酒杯：加冰 → 倒料 → 吧勺搅 → 盖上滤冰器 → 滤进杯子
+ *   搅和  搅拌机：倒料 → 碎冰 → 打 → 把杯壶端起来倒
+ *   加热  小锅：倒料 → 小火冒热气 → 端起来倒；蓝色火焰是两只金属杯点着火对倒
+ *   兑和 / 捣压 / 分层  直接在杯子里：量酒器、酒瓶、水壶一样一样倒，吧勺搅或提，捣棒压，勺背引流
+ * 工具都画在舞台坐标里（240 × 280），线宽固定；每样工具的原点放在“出酒口”上，倒的时候就绕着它转。
+ * 工具从头到尾都待在画面里：登场是原地弹出来，退场是原地淡出，不从画面边上切进切出。
+ * ============================================================ */
+const TW = 4;                                          // 工具的描边线宽
+const STEEL = ['#cfd9de', '#f5f9fa', '#9db0b9'];       // 不锈钢：主色、高光、暗部
+function tk(extra, w) { return Object.assign({ stroke: INK, 'stroke-width': w || TW, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, extra); }
+function vars(node, v) { for (const k in v) node.style.setProperty(k, v[k]); return node; }
+function sec(t) { return (Math.round(t * 100) / 100) + 's'; }
+/* 带一个动画类的 <g>：cls 动画类，v CSS 变量 */
+function act(cls, v, kids) { return vars(S('g', { class: cls }, kids), v || {}); }
+/* 姿态：translate(x, y) rotate(r) scale(s)。from → to 的补间用 a-pose；只有一个姿态时直接写成 transform */
+function poseVars(a, b) {
+  const v = { '--x0': n1(a.x) + 'px', '--y0': n1(a.y) + 'px', '--r0': (a.r || 0) + 'deg', '--s0': a.s || 1 };
+  if (b) { v['--x1'] = n1(b.x) + 'px'; v['--y1'] = n1(b.y) + 'px'; v['--r1'] = (b.r || 0) + 'deg'; v['--s1'] = b.s || 1; }
+  return v;
+}
+function poseAttr(a) { return 'translate(' + n1(a.x) + ' ' + n1(a.y) + ')' + (a.r ? ' rotate(' + a.r + ')' : '') + (a.s && a.s !== 1 ? ' scale(' + a.s + ')' : ''); }
+
+/* ---------- 三段式摇酒壶：原点在壶肩顶上的出酒口 ---------- */
+function gShaker() {
+  const tinD = 'M-27 24A27 5.6 0 0 0 27 24L21.5 99Q21 106 14 106H-14Q-21 106 -21.5 99Z';
+  const back = S('ellipse', tk({ cx: 0, cy: 24, rx: 27, ry: 5.6, fill: '#7f95a0' }, TW * 0.7));
+  const body = S('g', null,
+    S('path', { d: tinD, fill: STEEL[0] }),
+    S('path', { d: 'M11 29.2Q20 28 27 24L21.5 99Q21 106 14 106H7Z', fill: STEEL[2], opacity: 0.5 }),
+    S('path', { d: 'M-19 37L-15.5 91', fill: 'none', stroke: STEEL[1], 'stroke-width': 5.5, 'stroke-linecap': 'round' }),
+    S('path', tk({ d: tinD, fill: 'none' })));
+  const top = S('g', null,
+    S('path', tk({ d: 'M-9 0C-9 12 -27 11 -27 24A27 5.6 0 0 0 27 24C27 11 9 12 9 0Z', fill: STEEL[0] })),
+    S('path', { d: 'M-18.5 19Q-15 10 -7 6', fill: 'none', stroke: STEEL[1], 'stroke-width': 4, 'stroke-linecap': 'round' }),
+    S('ellipse', tk({ cx: 0, cy: 0, rx: 9, ry: 2.4, fill: '#7f95a0' }, TW * 0.7)));
+  const cap = S('g', null,
+    S('path', tk({ d: 'M-10.5 2V-13Q-10.5 -19 -4.5 -19H4.5Q10.5 -19 10.5 -13V2Z', fill: STEEL[0] })),
+    S('path', { d: 'M-5.5 -13V-3', fill: 'none', stroke: STEEL[1], 'stroke-width': 3.2, 'stroke-linecap': 'round' }));
+  /* 摇过以后壶身上的一层霜 */
+  const frost = S('g', { fill: '#ffffff', opacity: 0.8 }), rr = prng(77);
+  for (let i = 0; i < 16; i++) { const y = 34 + rr() * 62, w = 25 - (y - 24) * 0.07; add(frost, S('circle', { cx: n1((rr() - 0.5) * 2 * (w - 5)), cy: n1(y), r: n1(1 + rr() * 1.4) })); }
+  return { back: back, body: body, top: top, cap: cap, frost: frost, h: 106 };
+}
+
+/* ---------- 调酒杯：原点在杯嘴尖上；liq 酒色。返回各层，contents 是装酒和冰的那一层（已经带裁剪） ---------- */
+function gMixGlass(uid, liq) {
+  const bodyD = 'M5 3A29 5.8 0 0 0 63 3L58.5 80Q58 87 51 87H17Q10 87 9.5 80Z';
+  const back = S('g', null,
+    S('ellipse', Object.assign({ cx: 34, cy: 3, rx: 29, ry: 5.8 }, GLASS)),
+    S('path', tk({ d: 'M5 3A29 5.8 0 0 1 63 3', fill: 'none' }, TW * 0.7)));
+  /* 裁剪区：杯子里面，往上留一条“烟囱”，冰块和酒流从杯口上方落进来的时候看得见 */
+  const clip = [S('clipPath', { id: uid }, S('path', { d: 'M8 -240H60V3L56.5 76H11.5L8 3Z' })), S('clipPath', { id: uid + 'q' }, S('path', { d: 'M8 -3H60V3L56.5 76H11.5L8 3Z' }))];
+  const contents = S('g', { 'clip-path': 'url(#' + uid + ')' }), liquid = S('g', { 'clip-path': 'url(#' + uid + 'q)' });
+  const cut = [];
+  for (let i = 0; i < 5; i++) { const x0 = 13 + i * 9, x1 = x0 + 9; cut.push('M' + x0 + ' 44L' + (x1 + 0.6) + ' 74M' + x1 + ' 44L' + (x0 - 0.6) + ' 74'); }
+  const front = S('g', null,
+    S('path', Object.assign({ d: bodyD }, GLASS, { 'fill-opacity': 0.28 })),
+    S('path', { d: cut.join(''), fill: 'none', stroke: '#ffffff', 'stroke-opacity': 0.7, 'stroke-width': 1.5, 'stroke-linecap': 'round' }),
+    S('path', { d: 'M12.5 14L15 62', fill: 'none', stroke: '#ffffff', 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0.85 }),
+    S('path', tk({ d: bodyD, fill: 'none' })),
+    S('path', tk({ d: 'M9.5 2.2L0 -1.5L6 6.5', fill: '#f4f8f9' }, TW * 0.8)));
+  /* 滤冰器：盖在杯口上的一片圆片，前沿一圈弹簧，后面一个把手 */
+  const strainer = S('g', null,
+    S('path', tk({ d: 'M60 1L84 -4', fill: 'none' }, TW + 3.4)),
+    S('path', { d: 'M60 1L84 -4', fill: 'none', stroke: STEEL[0], 'stroke-width': 3.6, 'stroke-linecap': 'round' }),
+    S('ellipse', tk({ cx: 34, cy: 3, rx: 30.5, ry: 6.6, fill: STEEL[0] }, TW * 0.8)),
+    S('path', { d: 'M5 5A29.5 6 0 0 0 63 5', fill: 'none', stroke: '#7f95a0', 'stroke-width': 3, 'stroke-dasharray': '1.5 3.2' }),
+    S('ellipse', { cx: 30, cy: 1.6, rx: 14, ry: 2, fill: STEEL[1], opacity: 0.8 }));
+  return { clip: clip, back: back, contents: contents, liquid: liquid, front: front, strainer: strainer, liq: liq, top: 20, bottom: 76, pivot: [34, 48], h: 87, w: 68 };
+}
+
+/* ---------- 搅拌机：原点在杯壶的壶嘴尖上 ---------- */
+function gBlender(uid) {
+  const jarD = 'M4 3A27 5.4 0 0 0 58 3L49 78Q48.5 84 42.5 84H19.5Q13.5 84 13 78Z';
+  const back = S('g', null,
+    S('ellipse', Object.assign({ cx: 31, cy: 3, rx: 27, ry: 5.4 }, GLASS)),
+    S('path', tk({ d: 'M4 3A27 5.4 0 0 1 58 3', fill: 'none' }, TW * 0.7)));
+  const clip = [S('clipPath', { id: uid }, S('path', { d: 'M7 -240H55V3L46.5 80H15.5L7 3Z' })), S('clipPath', { id: uid + 'q' }, S('path', { d: 'M7 -3H55V3L46.5 80H15.5L7 3Z' }))];
+  const contents = S('g', { 'clip-path': 'url(#' + uid + ')' }), liquid = S('g', { 'clip-path': 'url(#' + uid + 'q)' });
+  const front = S('g', null,
+    S('path', tk({ d: 'M56 16C74 14 74 54 51 58', fill: 'none' }, TW + 5)),
+    S('path', { d: 'M56 16C74 14 74 54 51 58', fill: 'none', stroke: '#f3f7f8', 'stroke-width': 5, 'stroke-linecap': 'round' }),
+    S('path', Object.assign({ d: jarD }, GLASS, { 'fill-opacity': 0.26 })),
+    S('path', { d: 'M10 30H16M11.5 44H17.5M13 58H19', fill: 'none', stroke: INK, 'stroke-opacity': 0.35, 'stroke-width': 1.6, 'stroke-linecap': 'round' }),
+    S('path', { d: 'M11 13L16.5 62', fill: 'none', stroke: '#ffffff', 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0.85 }),
+    S('path', tk({ d: jarD, fill: 'none' })),
+    S('path', tk({ d: 'M8.5 2.2L0 -1.5L5.5 6.5', fill: '#f4f8f9' }, TW * 0.8)));
+  const lid = S('g', null,
+    S('path', tk({ d: 'M3 4V-3Q3 -6 6 -6H56Q59 -6 59 -3V4A28 5.6 0 0 1 3 4Z', fill: '#3b4750' })),
+    S('rect', tk({ x: 24, y: -13, width: 14, height: 8, rx: 3, fill: '#3b4750' }, TW * 0.8)));
+  const base = S('g', null,
+    S('path', tk({ d: 'M13 84H49L56 114Q57 119 52 119H10Q5 119 6 114Z', fill: '#3b4750' })),
+    S('path', { d: 'M15 91L11.5 111', fill: 'none', stroke: '#6d7c86', 'stroke-width': 4, 'stroke-linecap': 'round' }),
+    S('circle', tk({ cx: 31, cy: 103, r: 6.5, fill: '#f5c842' }, TW * 0.7)),
+    S('path', { d: 'M31 103V98.5', stroke: INK, 'stroke-width': 2.2, 'stroke-linecap': 'round' }));
+  return { clip: clip, back: back, contents: contents, liquid: liquid, front: front, lid: lid, base: base, top: 20, bottom: 80, pivot: [31, 50], h: 84, w: 62 };
+}
+
+/* ---------- 小奶锅：原点在锅沿的出酒口（左边）；liq 锅里的酒色 ---------- */
+function gPan(liq) {
+  const d = 'M2 3A28 5.6 0 0 0 58 3L54 28Q53.5 33 48.5 33H11.5Q6.5 33 6 28Z';
+  return {
+    back: S('g', null,
+      S('ellipse', tk({ cx: 30, cy: 3, rx: 28, ry: 5.6, fill: '#7f95a0' }, TW * 0.7)),
+      S('ellipse', { cx: 30, cy: 5.4, rx: 24, ry: 3.6, fill: liq })),
+    body: S('g', null,
+      S('path', tk({ d: 'M56 9L96 3', fill: 'none' }, TW + 6)),
+      S('path', { d: 'M56 9L96 3', fill: 'none', stroke: '#3b4750', 'stroke-width': 6, 'stroke-linecap': 'round' }),
+      S('path', { d: d, fill: STEEL[0] }),
+      S('path', { d: 'M40 8Q50 7 58 3L54 28Q53.5 33 48.5 33H36Z', fill: STEEL[2], opacity: 0.5 }),
+      S('path', { d: 'M9.5 13L11.5 26', fill: 'none', stroke: STEEL[1], 'stroke-width': 4.6, 'stroke-linecap': 'round' }),
+      S('path', tk({ d: d, fill: 'none' })),
+      S('path', tk({ d: 'M6 1.6L0 -1.5L5 6', fill: STEEL[0] }, TW * 0.8))),
+    h: 33, w: 96
+  };
+}
+/* 炉头上的一排小火苗：原点在火苗底边的中点 */
+function gBurner() {
+  const g = S('g');
+  [-18, -6, 6, 18].forEach(function (x, i) {
+    add(g, act('a-flame', { '--d': sec(i * 0.11) }, S('g', { transform: 'translate(' + x + ' 0)' },
+      S('path', tk({ d: 'M0 0C-6 -3 -5 -9 0 -15C5 -9 6 -3 0 0Z', fill: '#ff9a3c' }, TW * 0.6)),
+      S('path', { d: 'M0 -1.5C-2.6 -3 -2.2 -6 0 -9C2.2 -6 2.6 -3 0 -1.5Z', fill: '#ffe08a' }))));
+  });
+  return g;
+}
+
+/* ---------- 带柄的金属杯（蓝色火焰用的那一对）：原点在杯口左边的出酒口 ---------- */
+function gTinMug() {
+  const d = 'M2 3A19 4 0 0 0 40 3L37 36Q36.5 41 31.5 41H10.5Q5.5 41 5 36Z';
+  return {
+    back: S('ellipse', tk({ cx: 21, cy: 3, rx: 19, ry: 4, fill: '#7f95a0' }, TW * 0.7)),
+    body: S('g', null,
+      S('path', tk({ d: 'M39 11C54 10 53 31 37.5 32', fill: 'none' }, TW + 4.4)),
+      S('path', { d: 'M39 11C54 10 53 31 37.5 32', fill: 'none', stroke: STEEL[0], 'stroke-width': 4.4, 'stroke-linecap': 'round' }),
+      S('path', { d: d, fill: STEEL[0] }),
+      S('path', { d: 'M28 6.4Q35 5.6 40 3L37 36Q36.5 41 31.5 41H25Z', fill: STEEL[2], opacity: 0.5 }),
+      S('path', { d: 'M8.5 12L10.5 32', fill: 'none', stroke: STEEL[1], 'stroke-width': 4, 'stroke-linecap': 'round' }),
+      S('path', tk({ d: d, fill: 'none' }))),
+    h: 41, w: 52
+  };
+}
+
+/* ---------- 量酒器：原点在大头那一杯的左沿 ---------- */
+function gJigger() {
+  const d = 'M0 0A11 2.6 0 0 0 22 0L14.2 17L19.5 31Q20 33.5 17.5 33.5H4.5Q2 33.5 2.5 31L7.8 17Z';
+  return S('g', null,
+    S('ellipse', tk({ cx: 11, cy: 0, rx: 11, ry: 2.6, fill: '#7f95a0' }, TW * 0.7)),
+    S('path', { d: d, fill: STEEL[0] }),
+    S('path', { d: 'M13 2.3Q18 1.8 22 0L14.2 17L19.5 31Q20 33.5 17.5 33.5H12L11 17Z', fill: STEEL[2], opacity: 0.5 }),
+    S('path', { d: 'M4.5 5L8.5 14', fill: 'none', stroke: STEEL[1], 'stroke-width': 3, 'stroke-linecap': 'round' }),
+    S('path', tk({ d: d, fill: 'none' }, TW * 0.9)));
+}
+
+/* ---------- 酒瓶：原点在瓶口中心，瓶身朝 +y。b = { glass 瓶色, label 标签色, band 标签上的色带, foil 瓶口的箔 / 瓶盖, liq 透明瓶里的酒色 } ---------- */
+const BOTTLE_D = 'M-4.4 0V17C-4.4 28 -13 27 -13 39V72Q-13 78 -7 78H7Q13 78 13 72V39C13 27 4.4 28 4.4 17V0Z';
+function gBottle(uid, b) {
+  const g = S('g', null, S('clipPath', { id: uid }, S('path', { d: BOTTLE_D })));
+  add(g, S('path', { d: BOTTLE_D, fill: b.glass }));
+  const inner = S('g', { 'clip-path': 'url(#' + uid + ')' });
+  if (b.liq) add(inner, S('rect', { x: -14, y: 30, width: 28, height: 50, fill: b.liq }));
+  add(inner, S('rect', { x: 5, y: 0, width: 10, height: 80, fill: '#000000', opacity: 0.12 }));
+  if (b.label) add(inner, S('rect', { x: -14, y: 46, width: 28, height: 21, fill: b.label }));
+  if (b.band) add(inner, S('rect', { x: -14, y: 53, width: 28, height: 7, fill: b.band }));
+  if (b.foil) add(inner, S('rect', { x: -6, y: -1, width: 12, height: 21, fill: b.foil }));
+  add(inner, S('path', { d: 'M-8.5 40V70', fill: 'none', stroke: '#ffffff', 'stroke-width': 3.2, 'stroke-linecap': 'round', opacity: b.dark ? 0.35 : 0.8 }));
+  add(g, inner);
+  add(g, S('path', tk({ d: BOTTLE_D, fill: 'none' }, TW * 0.9)));
+  add(g, S('path', tk({ d: 'M-5.6 3H5.6', fill: 'none' }, TW * 0.9)));
+  return g;
+}
+/* 带气的、成瓶的材料各用什么瓶子；其余材料用透明瓶，里面是材料本身的颜色 */
+const BOTTLE_OF = {
+  soda: { glass: '#d5f1ea', label: '#ffffff', band: '#4f9be8' }, 'mineral-water': { glass: '#d5f1ea', label: '#ffffff', band: '#3fb4a8' },
+  tonic: { glass: '#d5f1ea', label: '#ffffff', band: '#f2c230' }, lemonade: { glass: '#dff3c8', label: '#ffffff', band: '#7dc24a' },
+  'grapefruit-soda': { glass: '#ffd9cc', label: '#ffffff', band: '#ff8a73' }, sanbitter: { glass: '#f0a08f', label: '#ffffff', band: '#d8302b' },
+  'ginger-beer': { glass: '#a8703a', label: '#f3e3b0', band: '#2f7d4f', dark: 1 }, 'ginger-ale': { glass: '#5f9a5a', label: '#f7ecc8', band: '#d9a441', dark: 1 },
+  cola: { glass: '#4a2a1c', label: '#e23b3b', band: '#ffffff', dark: 1 },
+  champagne: { glass: '#3f6b4c', label: '#f4ead0', foil: '#e7bf55', dark: 1 }, prosecco: { glass: '#4f7d58', label: '#f4ead0', foil: '#d9dfe2', dark: 1 },
+  cava: { glass: '#33503c', label: '#f4ead0', foil: '#2b2118', dark: 1 },
+  lager: { glass: '#a8652a', label: '#f3e3b0', band: '#c8382f', foil: '#e9c14e', dark: 1 }, 'pale-ale': { glass: '#8a4f1f', label: '#f3e3b0', band: '#2f7d4f', foil: '#e9c14e', dark: 1 },
+  stout: { glass: '#3b2414', label: '#f3e3b0', band: '#2b2118', foil: '#e9c14e', dark: 1 }, cider: { glass: '#6f9a45', label: '#fff3d6', band: '#c8382f', foil: '#e9c14e', dark: 1 },
+  'red-wine': { glass: '#3a2a2e', label: '#fffaf0', band: '#7a1f3a', foil: '#7a1f3a', dark: 1 }, 'dry-white-wine': { glass: '#b9c98a', label: '#fffaf0', band: '#8fa85a' }
+};
+function bottleFor(id, color) {
+  return BOTTLE_OF[id] || { glass: '#eef6f4', liq: color, label: '#ffffff', band: mix(color, INK, 0.25) };
+}
+
+/* ---------- 热水壶：原点在壶嘴尖上 ---------- */
+function gKettle() {
+  const d = 'M22 14Q22 6 30 6H52Q60 6 60 14L63 40Q63.5 45 58.5 45H23.5Q18.5 45 19 40Z';
+  return S('g', null,
+    S('path', tk({ d: 'M33 6C33 -12 62 -12 60 9', fill: 'none' }, TW + 4.6)),
+    S('path', { d: 'M33 6C33 -12 62 -12 60 9', fill: 'none', stroke: '#3b4750', 'stroke-width': 4.6, 'stroke-linecap': 'round' }),
+    S('path', tk({ d: 'M21 36C9 32 12 12 1.5 2', fill: 'none' }, TW + 5.4)),
+    S('path', { d: 'M21 36C9 32 12 12 1.5 2', fill: 'none', stroke: '#e2604c', 'stroke-width': 5.4, 'stroke-linecap': 'round' }),
+    S('path', { d: d, fill: '#e2604c' }),
+    S('path', { d: 'M48 6H52Q60 6 60 14L63 40Q63.5 45 58.5 45H46Z', fill: '#000000', opacity: 0.14 }),
+    S('path', { d: 'M25 15L23.5 35', fill: 'none', stroke: '#ffffff', 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0.7 }),
+    S('path', tk({ d: d, fill: 'none' })),
+    S('rect', tk({ x: 36, y: 0, width: 10, height: 6.5, rx: 2.5, fill: '#3b4750' }, TW * 0.8)));
+}
+
+/* ---------- 吧勺：原点在勺头底端，勺柄朝 -y；len 全长，u 线宽的缩放（画在杯子里的要按杯子的缩放反算） ---------- */
+function gBarSpoon(len, u) {
+  u = u || 1;
+  const y1 = -len + 4 * u, tw = [];
+  for (let y = -len * 0.34; y > -len * 0.74; y -= 5 * u) tw.push('M' + n1(-2.2 * u) + ' ' + n1(y) + 'L' + n1(2.2 * u) + ' ' + n1(y - 2.4 * u));
+  return S('g', null,
+    S('path', tk({ d: 'M0 ' + n1(-7 * u) + 'V' + n1(y1), fill: 'none' }, (3 + TW * 0.8) * u)),
+    S('path', { d: 'M0 ' + n1(-7 * u) + 'V' + n1(y1), fill: 'none', stroke: STEEL[0], 'stroke-width': n1(3 * u), 'stroke-linecap': 'round' }),
+    S('path', { d: tw.join(''), fill: 'none', stroke: '#7f95a0', 'stroke-width': n1(1.3 * u), 'stroke-linecap': 'round' }),
+    S('ellipse', tk({ cx: 0, cy: n1(-6.5 * u), rx: n1(5 * u), ry: n1(7.5 * u), fill: STEEL[0] }, TW * 0.7 * u)),
+    S('ellipse', { cx: n1(-1.4 * u), cy: n1(-8 * u), rx: n1(1.6 * u), ry: n1(3.2 * u), fill: STEEL[1] }),
+    S('circle', tk({ cx: 0, cy: n1(-len + 2 * u), r: n1(3.6 * u), fill: STEEL[0] }, TW * 0.7 * u)));
+}
+/* ---------- 捣棒：原点在底面中心 ---------- */
+function gMuddler(len, u) {
+  u = u || 1;
+  const w = 6.5 * u, d = 'M' + n1(-w) + ' 0V' + n1(-len + w) + 'Q' + n1(-w) + ' ' + n1(-len) + ' 0 ' + n1(-len) + 'Q' + n1(w) + ' ' + n1(-len) + ' ' + n1(w) + ' ' + n1(-len + w) + 'V0Z';
+  return S('g', null,
+    S('path', tk({ d: d, fill: '#c08a55' }, TW * 0.9 * u)),
+    S('path', { d: 'M' + n1(-w * 0.4) + ' ' + n1(-len * 0.2) + 'V' + n1(-len + w * 1.6), fill: 'none', stroke: '#e3b885', 'stroke-width': n1(2.6 * u), 'stroke-linecap': 'round' }),
+    S('path', { d: 'M' + n1(-w) + ' ' + n1(-9 * u) + 'H' + n1(w), fill: 'none', stroke: INK, 'stroke-opacity': 0.45, 'stroke-width': n1(1.6 * u) }));
+}
+/* ---------- 搓棒（一根细木棍，底下几根叉）：原点在底端 ---------- */
+function gSwizzle(len, u) {
+  u = u || 1;
+  const a = { fill: 'none', 'stroke-linecap': 'round' }, d = 'M0 ' + n1(-5 * u) + 'V' + n1(-len), p = 'M' + n1(-7 * u) + ' ' + n1(-2 * u) + 'L0 ' + n1(-8 * u) + 'L' + n1(7 * u) + ' ' + n1(-2 * u) + 'M0 0V' + n1(-8 * u);
+  return S('g', null,
+    S('path', Object.assign({ d: d + p, stroke: INK, 'stroke-width': n1((2.8 + TW * 0.8) * u), 'stroke-linejoin': 'round' }, a)),
+    S('path', Object.assign({ d: d + p, stroke: '#c98a4a', 'stroke-width': n1(2.8 * u), 'stroke-linejoin': 'round' }, a)));
+}
+/* ---------- 双重过滤用的细网：原点在网口中心，把手朝左上 ---------- */
+function gFineStrainer() {
+  return S('g', null,
+    S('path', tk({ d: 'M-12 0L-38 -9', fill: 'none' }, TW + 2.6)),
+    S('path', { d: 'M-12 0L-38 -9', fill: 'none', stroke: STEEL[0], 'stroke-width': 2.8, 'stroke-linecap': 'round' }),
+    S('path', tk({ d: 'M-12 0Q0 21 12 0Z', fill: '#f5f9fa', 'fill-opacity': 0.75 }, TW * 0.8)),
+    S('path', { d: 'M-7.5 4.5H7.5M-4.5 9H4.5M-5 1V10M0 1V12.5M5 1V10', fill: 'none', stroke: '#7f95a0', 'stroke-width': 1.1 }),
+    S('ellipse', tk({ cx: 0, cy: 0, rx: 12, ry: 2.8, fill: 'none' }, TW * 0.8)));
+}
+/* 动作线：摇的时候壶两边的几道弧。画在舞台坐标里，不跟着壶转；(x, y) 是壶摇起来以后大致的中心 */
+function gWhoosh(x, y) {
+  const g = S('g', { fill: 'none', stroke: INK, 'stroke-opacity': 0.5, 'stroke-width': 3, 'stroke-linecap': 'round' });
+  [[-1, 38, -36, 16], [-1, 44, -10, 20], [-1, 37, 20, 14], [1, 46, -30, 15], [1, 52, -4, 20], [1, 45, 26, 14]].forEach(function (p) {
+    add(g, S('path', { d: 'M' + n1(x + p[0] * p[1]) + ' ' + n1(y + p[2]) + 'q' + p[0] * 7 + ' ' + p[3] / 2 + ' 0 ' + p[3] }));
+  });
+  return g;
+}
+
+/* ============================================================
+ * 一股酒流（舞台坐标或工具自己的坐标都行）：从 (x, y0) 垂直落到 y1
+ * ============================================================ */
+function gStream(x, y0, y1, color, t0, dur, w) {
+  const st = S('line', { class: 'a-stream', x1: n1(x), y1: n1(y0), x2: n1(x), y2: n1(y1), stroke: color, 'stroke-width': w || 6, 'stroke-linecap': 'round' });
+  return vars(st, { '--len': n1(Math.abs(y1 - y0)) + 'px', '--d': sec(t0), '--t': sec(dur) });
+}
+
+/* ============================================================
+ * 在杯口上方倒料的酒瓶 / 水壶（倒一次，时长随量走）和量酒器（连着倒 n 次，每次一小股）。
+ *   M = 出酒口要到的位置（舞台坐标）。平时停在右上方不碰杯子，倒的时候移到杯口正上方转过去，倒完回原位再淡出。
+ * ============================================================ */
+function pourer(kind, M, t0, dur, o) {
+  o = o || {};
+  /* steep：给台面右边的工具倒料时右上方地方不够，瓶子从头到尾都几乎倒立着（等的时候悬在上面，倒的时候落下来再斜一点），
+   * 不从竖着转过来：那样瓶底会扫出画面右边 */
+  /* 水壶的壶身比壶嘴低：等着的时候停得高一些，倒的时候多斜一点，壶底才不会压到杯沿和杯柄 */
+  const rest = kind === 'kettle' ? { x: M.x + 16, y: M.y - 30, r: 0 } : o.steep ? { x: M.x + 3, y: M.y - 24, r: -140 } : { x: M.x + 23, y: M.y - 25, r: -74 };
+  const pour = { x: M.x, y: M.y, r: kind === 'kettle' ? -46 : o.steep ? -152 : -127 };
+  const v = poseVars(rest, pour);
+  v['--d'] = sec(t0 - 0.2); v['--d2'] = sec(t0 + dur);
+  return act('a-out', { '--d': sec(t0 + dur + 0.2) }, act('a-tip', v, act('a-pop', { '--d': sec(t0 - 0.42) }, kind === 'kettle' ? gKettle() : gBottle(o.uid, o.bottle))));
+}
+const JIG_T = 0.48, JIG_LEAD = 0.144, JIG_POUR = 0.208;           // 量酒器倒一次：移过去、倒、移回来
+function jigger(M, t0, n) {
+  const v = poseVars({ x: M.x + 19, y: M.y - 29, r: 0 }, { x: M.x, y: M.y, r: -116 });
+  v['--d'] = sec(t0); v['--t'] = sec(JIG_T); v['--n'] = n;
+  return act('a-out', { '--d': sec(t0 + n * JIG_T + 0.02) }, act('a-tipn', v, act('a-pop', { '--d': sec(t0 - 0.24) }, gJigger())));
+}
+
+/* ============================================================
+ * 这杯酒要倒的液体：[{ id, ml, fizzy, kind, color }]，按配方顺序（固体、几滴苦精、杯边用的不算）
+ * ============================================================ */
+function pourRows(c) {
+  const out = [];
+  c.ing.forEach(function (row) {
+    const sp = SPEC[row[0]], note = typeof row[3] === 'string' ? row[3] : '';
+    if (!sp || EST_SKIP[note] || note === '洗杯' || /^[xgb]$/.test(sp[3])) return;
+    const ml = rowMl(row);
+    if (ml >= 4) out.push({ id: row[0], ml: ml, fizzy: !!FIZZY[row[0]], kind: sp[3], color: ING[row[0]][2] });
+  });
+  return out;
+}
+/* 直接在杯里兑的酒：一样一样怎么倒。返回 [{ src: 'jig' | 'bottle' | 'kettle', id, color, f（占成品的比例）, fizzy }]
+ * 烈酒和利口酒用量酒器（最多倒三次），大份的果汁、茶、葡萄酒和带气的用瓶子，热饮用水壶 */
+function colorGap(a, b) { const A = hexToRgb(a), B = hexToRgb(b); return Math.abs(A[0] - B[0]) + Math.abs(A[1] - B[1]) + Math.abs(A[2] - B[2]); }
+function buildSources(c, PR, floatColor) {
+  const rows = pourRows(c), base = [], big = [], top = [], src = [];
+  let tot = 0;
+  /* 最后才漂上去 / 沉下去的那一样另外倒，这里先不算它：按颜色认，取最接近那一层颜色的材料 */
+  if (floatColor && rows.length > 1) {
+    let k = -1, best = 150;
+    rows.forEach(function (r, i) { const g = colorGap(r.color, floatColor); if (g < best) { best = g; k = i; } });
+    if (k >= 0) rows.splice(k, 1);
+  }
+  rows.forEach(function (r) { tot += r.ml; (r.fizzy ? top : r.ml >= 45 && /^[jodmw]$/.test(r.kind) ? big : base).push(r); });
+  const sum = function (a) { return a.reduce(function (x, r) { return x + r.ml; }, 0); };
+  if (PR.drop) base.length = 0;                          // 沉进去的那一小杯烈酒不往大杯里倒
+  if (!rows.length) return [{ src: 'bottle', id: '', color: '#f1e3b0', f: 1 }];
+  if (base.length) {
+    const n = Math.min(3, base.length), f = sum(base) / tot / n;
+    for (let i = 0; i < n; i++) src.push({ src: 'jig', id: base[i].id, color: base[i].color, f: f });
+  }
+  if (big.length) {
+    const b = big.slice().sort(function (x, y) { return y.ml - x.ml; })[0];
+    src.push({ src: PR.hot === 'pour' ? 'kettle' : 'bottle', id: b.id, color: b.color, f: sum(big) / tot });
+  }
+  top.slice(0, 2).forEach(function (r, i) { src.push({ src: 'bottle', id: r.id, color: r.color, f: (i === Math.min(top.length, 2) - 1 ? sum(top.slice(i)) : r.ml) / tot, fizzy: 1 }); });
+  /* 每一步至少占一成，画面上才看得出酒面在涨 */
+  let s = 0;
+  src.forEach(function (x) { x.f = Math.max(0.1, x.f); s += x.f; });
+  src.forEach(function (x) { x.f /= s; });
+  return src;
+}
+/* 壶里 / 调酒杯里先倒的那两样（量最大的两种不带气的材料）的颜色 */
+function toolColors(c) {
+  const rows = pourRows(c).filter(function (r) { return !r.fizzy; }).sort(function (x, y) { return y.ml - x.ml; });
+  return rows.slice(0, 2).map(function (r) { return r.color; });
+}
+
+/* ============================================================
+ * 用工具调的那一段（摇酒壶 / 调酒杯 / 搅拌机 / 小锅 / 一对金属杯）。
+ *   K = { uid, M 倒酒时出酒口的位置, liq 成品酒色, cols 先倒的材料颜色, ice 'cubes' | 'shards' | '', dry, whip, mud, fine, heat: { id, color } }
+ *       cx 工具干活的位置（台面右半边的中线）, t0 从什么时候开始（洗杯的要等杯子那边忙完）
+ * 返回 { g, tReady 工具斜到杯口上方、可以开倒的时间, bind(t0, dur) 定下开倒的时间和时长, end(t) 倒完退场 }
+ * ============================================================ */
+function filmTool(kind, K) {
+  const g = S('g'), outs = [];
+  const leave = function (node) { const w = act('a-out', { '--d': '99s' }, node); outs.push(w); return w; };
+  const cols = K.cols && K.cols.length ? K.cols : [K.liq];
+  const movers = [];                                    // 跟着“斜过去”这一步走的动画：时长等定下开倒的时间再填
+  const MOVE = 0.72, CXT = K.cx || 176;                 // 工具在台面右半边干活（左半边是等着的杯子）
+  let t = (K.t0 || 0) + 0.3, tMove = 0, bindMore = function () {};
+  /* 从干活的位置到杯口上方：先竖直抬到比倒酒的位置还高一点（外层 a-arc 管上下），抬起来以后才横着移过去、同时斜过来
+   * （里层 a-pose 加 a-late，晚三成时间才动），不从等着的杯子身上擦过去。up = 路上比倒酒的位置再高出多少 */
+  const arcs = [];
+  const flight = function (P1, P2, node, up) {
+    const v = poseVars({ x: P1.x, y: P2.y, r: P1.r, s: P1.s }, P2);
+    v['--d'] = sec(tMove);
+    const ps = act('a-pose a-late', v, node), w = act('a-arc', { '--d': '99s', '--dy': n1(P1.y - P2.y) + 'px', '--up': n1(-up) + 'px' }, ps);
+    movers.push(ps, w); arcs.push(w);
+    return w;
+  };
+  const drop = function (node, x, y, t0, sc) { return put(node, x, y, 0, sc || 1, 'a-ice', { '--d': sec(t0) }); };
+  /* 壶里捣压：两小块材料落进去，捣棒压三下 */
+  const muddleIn = function (into, front, x, yBot, len) {
+    [[-7, '#7cc25a'], [6, '#f0c84a']].forEach(function (b, i) { add(into, vars(drop(S('path', tk({ d: 'M-5 0Q0 -8 5 0Q0 5 -5 0Z', fill: b[1] }, TW * 0.6)), x + b[0], yBot - 4, t + i * 0.08).firstChild, { '--from': '-118px' }).parentNode); });
+    add(front, S('g', { transform: 'translate(' + x + ' ' + yBot + ')' },
+      act('a-up', { '--d': sec(t + 0.98) }, act('a-ice', { '--d': sec(t + 0.12) }, act('a-press', { '--d': sec(t + 0.32), '--t': '.62s' }, gMuddler(len))))));
+    t += 1.12;
+  };
+
+  if (kind === 'shaker') {
+    const sh = gShaker(), S1 = 1.06, P1 = { x: CXT, y: 252 - sh.h * S1, s: S1 }, P2 = { x: K.M.x, y: K.M.y, r: -130, s: 0.9 };
+    const openY = P1.y + 24 * S1, J = { x: CXT + 2, y: openY - 36 };
+    const fallG = S('g'), mudG = S('g'), inner = S('g', null, sh.back, fallG, sh.body, mudG);
+    if (K.mud) muddleIn(fallG, fallG, 0, 98, 112);
+    const n = Math.min(2, cols.length);
+    add(g, jigger(J, t, n));
+    for (let i = 0; i < n; i++) add(fallG, gStream((J.x - 2 - P1.x) / S1, (J.y + 5 - P1.y) / S1, 34, mix(cols[i], INK, 0.1), t + i * JIG_T + JIG_LEAD - 0.03, JIG_POUR + 0.08, 5.5));
+    t += n * JIG_T + 0.06;
+    const iceIn = function (t0) {
+      [[-9, 46], [9, 50], [0, 38]].forEach(function (p, i) {
+        add(fallG, drop(K.ice === 'shards' ? gShard(15, prng(7 + i), 1) : gIce(15), p[0], p[1], t0 + i * 0.07));
+      });
+    };
+    if (K.dry !== 1 && K.ice) { iceIn(t); t += 0.3; }
+    const tTop = t;
+    t += 0.24;
+    const bursts = [];
+    if (K.dry === 1) { bursts.push([t, 0.46]); t += 0.46; iceIn(t + 0.1); bursts.push([t + 0.44, 0.74]); t += 0.44 + 0.74; }
+    else if (K.dry === 2) { bursts.push([t, 0.76]); bursts.push([t + 0.94, 0.46]); t += 1.4; }
+    else { const d = K.whip ? 0.52 : 0.78; bursts.push([t, d]); t += d; }
+    tMove = t + 0.04;
+    const capG = act('a-capoff', { '--d': sec(tMove) }, sh.cap);
+    let topG = act('a-ice', { '--d': sec(tTop) }, S('g', null, sh.top, capG));
+    if (K.dry === 1) topG = act('a-hop', { '--d': sec(bursts[0][0] + bursts[0][1] + 0.02), '--t': '.4s' }, topG);
+    let node = S('g', null, inner, topG, act('a-fade', { '--d': sec(bursts[bursts.length - 1][0] + 0.3) }, sh.frost));
+    bursts.forEach(function (b) {
+      add(g, act('a-blink', { '--d': sec(b[0]), '--t': sec(b[1]) }, gWhoosh(CXT + 1, P1.y + 22 * S1)));
+      node = act('a-shake', { '--d': sec(b[0]), '--t': sec(b[1]) }, node);
+    });
+    add(g, leave(act('a-pop', { '--d': sec(K.t0 || 0) }, flight(P1, P2, node, 10))));
+  } else if (kind === 'mixglass' || kind === 'blender') {
+    const blend = kind === 'blender', T = blend ? gBlender(K.uid + 'j') : gMixGlass(K.uid + 'j', K.liq), S1 = blend ? 1 : 1.08;
+    const P1 = { x: CXT - T.pivot[0] * S1, y: 252 - (blend ? 119 : T.h) * S1, s: S1 }, P2 = { x: K.M.x, y: K.M.y, r: -104, s: 0.9 };
+    const J = { x: P1.x + (T.pivot[0] + 3) * S1, y: P1.y - 32 }, H = T.bottom - T.top;
+    add(g, T.clip);
+    const mudG = S('g'), iceG = S('g'), streams = S('g');
+    if (K.mud) muddleIn(iceG, mudG, T.pivot[0], T.bottom - 1, 104);
+    /* 冰：调酒杯先加冰再倒酒；搅拌机先倒料，再加碎冰 */
+    const icePos = blend ? [[20, 66], [42, 64], [31, 52], [22, 40], [41, 42], [31, 30]] : [[22, 63], [45, 61], [31, 45], [46, 39]], ices = [];
+    const iceIn = function (t0) {
+      icePos.forEach(function (p, i) {
+        if (!K.ice) return;
+        const ic = act('a-orbit', { '--a': (i % 2 ? -1 : 1) * (blend ? 7 : 5) + 'px' }, blend ? gShard(15, prng(11 + i), 0) : gIce(16));
+        ices.push(ic);
+        add(iceG, drop(ic, p[0], p[1], t0 + i * 0.06));
+      });
+    };
+    if (!blend) { iceIn(t); t += 0.4; }
+    const n = Math.min(2, cols.length), tJ = t;
+    add(g, jigger(J, t, n));
+    let lv = S('g', null, S('rect', { x: -220, y: T.top, width: 520, height: 420, fill: K.liq }), S('rect', { x: -220, y: T.top, width: 520, height: 3.6, fill: mix(K.liq, '#ffffff', 0.4) }));
+    for (let i = 0; i < n; i++) {
+      const ts = tJ + i * JIG_T + JIG_LEAD;
+      add(streams, gStream((J.x - 2 - P1.x) / S1, (J.y + 5 - P1.y) / S1, T.bottom - 4, mix(cols[i], INK, 0.1), ts - 0.03, JIG_POUR + 0.08, 5.5));
+      lv = act('a-step', { '--h': n1(H / n) + 'px', '--d': sec(ts), '--t': '.3s' }, lv);
+    }
+    t += n * JIG_T + 0.06;
+    if (blend && K.ice) { iceIn(t); t += 0.46; }
+    /* 动作：吧勺搅 / 搅拌机打 */
+    let tAct = t, dAct;
+    const extra = S('g');
+    if (blend) {
+      add(extra, act('a-capoff', { '--d': '99s' }, act('a-ice', { '--d': sec(t) }, T.lid)));
+      tAct = t + 0.28; dAct = K.flash ? 0.56 : 1;
+    } else {
+      dAct = 0.96;
+      add(mudG, S('g', { transform: 'translate(40 73)' }, act('a-up', { '--d': sec(t + 0.22 + dAct + 0.04) }, act('a-ice', { '--d': sec(t) },
+        vars(act('a-stir', { '--d': sec(t + 0.22), '--t': '.32s', '--n': 3, '--a': '7px' }, gBarSpoon(106)), { 'transform-origin': '0px -70px' })))));
+      tAct = t + 0.22;
+      add(extra, act('a-ice', { '--d': sec(tAct + dAct + 0.1) }, T.strainer));
+    }
+    ices.forEach(function (ic, i) { vars(ic, { '--d': sec(tAct + (i % 3) * 0.05), '--t': blend ? '.16s' : '.32s', '--n': blend ? Math.round(dAct / 0.16) : 3 }); });
+    t = tAct + dAct + (blend ? 0.08 : 0.28);
+    tMove = t;
+    /* 酒面：杯子斜过去的时候保持水平（反着转回来），倒的时候往下降 */
+    const tilt = act('a-sink a-late', { '--h': '14px', '--d': sec(tMove) }, lv), drain = act('a-sink', { '--h': n1(H + 14) + 'px', '--d': '99s', '--t': '1s' }, tilt);
+    const level = vars(act('a-level a-late', { '--r1': -P2.r + 'deg', '--d': sec(tMove) }, drain), { 'transform-origin': T.pivot[0] + 'px ' + T.pivot[1] + 'px' });
+    movers.push(tilt, level);
+    add(T.liquid, level);
+    add(T.contents, [T.liquid, streams, iceG]);
+    bindMore = function (t0, dur) { vars(drain, { '--d': sec(t0), '--t': sec(dur) }); };
+    let node = S('g', null, T.back, T.contents, mudG, T.front, extra);
+    if (blend) {
+      extra.firstChild.style.setProperty('--d', sec(tMove));
+      node = act('a-buzz', { '--d': sec(tAct), '--n': Math.round(dAct / 0.08) }, node);
+      /* 底座留在台面上：杯壶端起来的时候它原地淡出 */
+      add(g, act('a-out', { '--d': sec(tMove + 0.05) }, act('a-pop', { '--d': sec(K.t0 || 0) }, S('g', { transform: poseAttr(P1) }, T.base))));
+    }
+    add(g, leave(act('a-pop', { '--d': sec(K.t0 || 0) }, flight(P1, P2, node, 8))));
+  } else if (kind === 'pan') {
+    const pan = gPan(K.liq), S1 = 1.02, P1 = { x: CXT - 44 * S1, y: 252 - 33 * S1 - 24, s: S1 }, P2 = { x: K.M.x, y: K.M.y, r: -64, s: 0.95 };
+    const J = { x: P1.x + 34 * S1, y: P1.y - 30 }, cx = P1.x + 30 * S1;
+    const liqE = pan.back.lastChild, streams = S('g');
+    pan.back.removeChild(liqE);
+    const b = K.heat || { id: '', color: K.liq };
+    add(g, pourer('bottle', J, t, 0.62, { uid: K.uid + 'h', bottle: bottleFor(b.id, b.color), steep: 1 }));
+    add(streams, gStream((J.x - 1 - P1.x) / S1, (J.y + 4 - P1.y) / S1, 8, mix(b.color, INK, 0.1), t - 0.04, 0.7, 5.5));
+    t += 0.62 + 0.3;
+    /* 开火：锅底一排小火苗，锅上冒热气 */
+    add(g, act('a-out', { '--d': sec(t + 1.2) }, act('a-pop', { '--d': sec(t - 0.5) }, S('g', { transform: 'translate(' + n1(cx) + ' 250) scale(1.1)' }, gBurner()))));
+    add(g, act('a-out', { '--d': sec(t + 1.3) }, S('g', { transform: 'translate(' + n1(cx) + ' ' + n1(P1.y - 6) + ')' }, gSteam(true, t - 0.1))));
+    t += 1.15;
+    tMove = t;
+    add(g, leave(act('a-pop', { '--d': sec(K.t0 || 0) }, flight(P1, P2, S('g', null, pan.back, act('a-fade', { '--d': '.42s' }, liqE), streams, pan.body), 18))));
+  } else {
+    /* 蓝色火焰：一只杯子里的酒点着了，从高处那只倒进低处这只，再倒回杯子 */
+    const A = gTinMug(), B = gTinMug(), S1 = 1.2, P1 = { x: CXT - 36, y: 252 - A.h * S1, s: S1 }, P2 = { x: K.M.x, y: K.M.y, r: -70, s: 0.95 };
+    const ax = P1.x + 21 * S1, ay = P1.y + 3 * S1, Bp = { x: ax + 4, y: ay - 72, r: -62, s: 1.1 };
+    const fire = function (x, y0, y1, t0, d) {
+      return S('g', null, gStream(x, y0, y1, '#4f8fe8', t0, d, 9), gStream(x, y0, y1, '#bfe0ff', t0, d, 3.6));
+    };
+    add(g, act('a-out', { '--d': sec(t + 1.9) }, act('a-pop', { '--d': sec(t - 0.1) }, S('g', { transform: poseAttr(Bp) }, B.back, B.body))));
+    const flames = S('g', null, fire(ax + 4, Bp.y + 3, ay + 4, t + 0.25, 0.62), fire(ax + 4, Bp.y + 3, ay + 4, t + 1.05, 0.62));
+    const blue = act('a-out', { '--d': '99s' }, act('a-pop', { '--d': sec(t + 0.4) }, act('a-flame', null, S('g', { transform: 'translate(21 2)' },
+      S('path', tk({ d: 'M0 0C-10 -4 -8 -15 0 -25C8 -15 10 -4 0 0Z', fill: '#5aa0f0' }, TW * 0.6)), S('path', { d: 'M0 -2C-4.4 -5 -3.6 -10 0 -15C3.6 -10 4.4 -5 0 -2Z', fill: '#d7ecff' })))));
+    outs.push(blue);
+    t += 2.0;
+    tMove = t;
+    add(g, leave(act('a-pop', { '--d': sec(K.t0 || 0) }, flight(P1, P2, S('g', null, A.back, blue, A.body), 12))));
+    g.insertBefore(flames, g.lastChild);
+    outs.pop(); outs.splice(outs.indexOf(blue), 1);        // 火苗和这只杯子各有各的退场时间
+    const cupOut = g.lastChild;
+    return { g: g, tReady: tMove + MOVE,
+      bind: function (t0) { movers.forEach(function (m) { m.style.setProperty('--t', sec(t0 - tMove)); }); arcs.forEach(function (m) { m.style.setProperty('--d', sec(tMove)); }); blue.style.setProperty('--d', sec(t0 - 0.3)); },
+      end: function (te) { cupOut.style.setProperty('--d', sec(te)); } };
+  }
+  /* 双重过滤：出酒口和杯口之间多一只细网 */
+  let fine = null;
+  if (K.fine) { fine = act('a-pop', { '--d': '99s' }, S('g', { transform: 'translate(' + n1(K.M.x) + ' ' + n1(K.M.y + 15) + ') scale(0.82)' }, gFineStrainer())); add(g, leave(fine)); }
+  return {
+    g: g, tMove: tMove, tReady: tMove + MOVE,
+    /* 开倒的时间定了：工具正好在这一刻斜到位（杯子、冰块落稳要多久，它就慢慢斜多久），壶里的酒面跟着降 */
+    bind: function (t0, dur) {
+      movers.forEach(function (m) { m.style.setProperty('--t', sec(t0 - tMove)); });
+      arcs.forEach(function (m) { m.style.setProperty('--d', sec(tMove)); });
+      if (fine) fine.style.setProperty('--d', sec(t0 - 0.3));
+      bindMore(t0, dur);
+    },
+    end: function (te) { outs.forEach(function (o) { o.style.setProperty('--d', sec(te)); }); }
+  };
+}
+
+/* ============================================================
  * 鸡尾酒插画：杯型 + 酒液 + 冰 + 装饰，按这杯酒真实出品的样子组合。
  * 外观数据来自 looks.js（c.art）：
  *   liq   酒液：'#色' | [[色, 比例], …]（自下而上分层）| { grad: [[位置, 色], …] }（自上而下渐变）
@@ -7324,8 +8119,10 @@ function gShard(size, rnd, solid) {
  *   foam  泡沫颜色；foamTop: 'bubbly'（粗泡）| 'rise'（高出杯口的泡沫柱）
  *   fizz  有气泡；fill 斟酒高度；cut 刻花杯
  *   g     装饰记号 name[:种类][@位置]，例如 'wheel:lime@float'
- * 动画时间线：杯子落下 → 冰块和捣压的材料 → 逐层倒酒（带气的酒分两段：先基酒，再加满）
- *            → 漂浮 / 沉底的颜色渗开 → 装饰 → 循环的小动作（气泡、浮冰、热气、火苗）。
+ * 动画时间线（照做法演一遍，分镜见 art_prep.js）：
+ *   用工具调的（摇和 / 调和 / 搅和 / 加热）：工具登场 → 倒料、加冰 → 摇 / 搅 / 打 / 加热 → 杯子落下、加冰 → 工具斜过来把酒倒进杯子 → 工具退场
+ *   直接在杯里做的（兑和 / 捣压 / 分层）：杯子落下 → 捣压 → 加冰 → 量酒器、酒瓶一样一样倒 → 吧勺搅或提
+ *   之后：加满气泡 → 漂浮 / 沉底的那一股 → 镜头推近 → 装饰 → 循环的小动作（气泡、浮冰、热气、火苗）。
  * ============================================================ */
 function parseTok(t) {
   const a = t.split('@'), b = a[0].split(':');
@@ -7344,7 +8141,7 @@ function drinkTint(c) {
 /* 装饰物在杯口以上 / 杯壁以外各占多少地方（缩略图取景用） */
 const G_EXT = {
   wheel: [22, 26], half: [22, 26], wedge: [24, 26], twist: [14, 26], swath: [30, 20], cherry: [34, 24], cherrypick: [20, 30], olives: [30, 24],
-  berriespick: [20, 30], ginger: [20, 30], flag: [46, 30], pineapple: [36, 36], fronds: [64, 9], mint: [50, 9], celery: [66, 9], straw: [66, 24], straws: [44, 22],
+  berriespick: [20, 30], ginger: [20, 30], flag: [46, 30], pineapple: [56, 36], fronds: [64, 9], mint: [50, 9], celery: [66, 9], straw: [66, 24], straws: [44, 22],
   umbrella: [66, 30], steam: [50, 9], dome: [44, 9], cinnamon: [52, 9], orchid: [30, 30], limeshell: [36, 9], paperplane: [34, 34], applefan: [36, 28],
   flame: [62, 24], strawberry: [26, 24], berries: [28, 9], spiral: [14, 12], chili: [24, 24], chopshot: [36, 18], stirrer: [58, 28]
 };
@@ -7358,8 +8155,9 @@ function drinkBounds(c) {
     up = Math.max(up, t.n === 'mint' && t.at === 'big' ? 62 : e[0]);
     side = Math.max(side, t.n === 'pineapple' && rimR > 48 ? 26 : e[1]);
   });
-  const half = Math.max(r + 9, rimR + side) + (V.handle ? 24 : 0), top = V.pts[0][0] - up;
-  return { x: CX - half, y: top, w: half * 2, h: 260 - top };
+  /* 画框要把杯底的影子整个包进去（影子比杯脚宽 16、比台面低 12），不然缩略图里影子会被切平 */
+  const half = Math.max(r + 9, rimR + side, (V.foot || V.pts[V.pts.length - 1][1]) + 17) + (V.handle ? 24 : 0), top = V.pts[0][0] - up;
+  return { x: CX - half, y: top, w: half * 2, h: 264 - top };
 }
 
 function drinkArt(c, o) {
@@ -7369,7 +8167,7 @@ function drinkArt(c, o) {
   const has = function (n) { return G.some(function (t) { return t.n === n; }); };
   const n2 = function (v) { return Math.round(v * 100) / 100; };
   const B = drinkBounds(c);
-  const fit = o.stage ? Math.min(1.3, 226 / B.h, 204 / B.w) : 1;
+  const fit = o.stage ? Math.min(1.3, 226 / (B.h - 4), 204 / B.w) : 1;
   SW = o.stage ? 5 / fit : o.px ? (o.line || 3) * Math.max(B.w, B.h) / o.px : 5.5;
 
   const svg = S('svg', {
@@ -7382,7 +8180,8 @@ function drinkArt(c, o) {
   svg.appendChild(defs);
   if (o.stage) stageBg(svg, drinkTint(c));
   const world = S('g', o.stage ? { transform: 'translate(120 252) scale(' + Math.round(fit * 1000) / 1000 + ') translate(-120 -252)' } : null);
-  svg.appendChild(world);
+  const cam = on ? S('g', { class: 'a-cam' }, world) : world;               // 镜头：调制的时候拉远，出品的时候推近
+  svg.appendChild(cam);
 
   /* ---- 几何 ---- */
   const P = buildProfile(V.pts, V.curved), yRim = P[0][0], yBot = P[P.length - 1][0], rRim = P[0][1];
@@ -7418,12 +8217,16 @@ function drinkArt(c, o) {
   if (A.ice === 'big') { const s = Math.min(50, rS * 1.02); ice.push([0, Math.max(6, Math.min(14, H - s / 2 - 1)), s, -7, 'cube']); }
   else if (A.ice === 'sphere') { const r = Math.min(26, rS * 0.56); ice.push([0, Math.max(3, Math.min(r * 0.74, H - r - 1)), r, 0, 'sphere']); }
   else if (A.ice === 'spear') ice.push([0, -7, Math.min(34, rS * 1.2), 1.5, 'spear']);
-  else if (A.ice === 'cubes') (ICE_LAYOUT[c.glass] || ICE_LAYOUT.highball).forEach(function (p) { ice.push([p[0], p[1], p[2], p[3], 'cube']); });
+  else if (A.ice === 'cubes') (ICE_LAYOUT[c.glass] || ICE_LAYOUT.highball).forEach(function (p) {
+    /* 酒斟得浅、或者杯子比摆位表设想的窄的时候，把冰块往里收，免得被杯壁、杯底切掉一块 */
+    const s = p[2], y = opaque ? p[1] : Math.min(p[1], Math.max(s * 0.45, H - s * 0.58)), lim = opaque ? 99 : Math.max(0, rIn(yS + y) - s * 0.62);
+    ice.push([Math.max(-lim, Math.min(lim, p[0])), y, s, p[3], 'cube']);
+  });
   else if (A.ice === 'crushed' && !opaque) {
     const rr = prng(hashStr(c.id));
     for (let y = yS - 4; y < yBotIn - 9; y += 15) {
-      const r = rIn(Math.min(y + 6, yBotIn)) - 9, n = Math.max(1, Math.round(r * 2 / 17));
-      for (let j = 0; j < n; j++) ice.push([(n === 1 ? 0 : -r + 2 * r * j / (n - 1)) + (rr() - 0.5) * 6, y - yS + (rr() - 0.5) * 5, 14 + rr() * 5, 0, 'shard']);
+      const r = rIn(Math.min(y + 6, yBotIn)) - 11, n = Math.max(1, Math.round(r * 2 / 17));
+      for (let j = 0; j < n; j++) ice.push([(n === 1 ? 0 : -r + 2 * r * j / (n - 1)) + (rr() - 0.5) * 4, y - yS + (rr() - 0.5) * 5, 14 + rr() * 5, 0, 'shard']);
     }
   }
   if (has('dome')) {                                                         // 堆出杯口的碎冰
@@ -7440,35 +8243,168 @@ function drinkArt(c, o) {
     rest = Math.max(0, Math.min(14, H - low - 1));
   }
 
-  /* ---- 时间线（秒） ---- */
-  const nIce = ice.length + domeIce.length, tIce = 0.44;
-  const tPour = nIce ? tIce + Math.min(nIce, 9) * 0.05 + 0.36 : has('inlime') || has('inmint') || has('sugarcube') ? 0.84 : 0.36;
+  /* ---- 分镜与时间线（秒）----
+   * 有动画的时候照这杯酒的做法演一遍（手法的分类见 prep.js，工具和动作见 art_prep.js）：
+   * 镜头先拉远，杯子缩小、靠边，给工具让出地方；调好、倒完，镜头推近到成品，最后才上装饰。 */
+  const nIce = ice.length + domeIce.length;
+  const PR = on ? prepOf(c) : null, toolKind = PR ? PR.tool : null;
+  /* 用工具调的：杯子在台面左边等着（缩小到 96 宽以内，占 18 到 114），工具在右边干活（145 往右），调好了抬起来移到杯口上方来倒；
+   * 直接在杯里做的：杯子在中间，只是缩小一点，把杯口上方留给量酒器和酒瓶 */
+  const hw = V.handle ? 34 : 0;                                               // 杯柄往右多占的宽度
+  const heap = domeIce.length ? (opaque ? 44 : 34) : 0;                       // 堆出杯口的碎冰有多高：出酒口要悬在冰堆上面
+  let rMax = Math.max(rRim, V.foot || 0);                                     // 杯子最宽的地方（鼓肚的陶杯、白兰地杯比杯口宽）
+  P.forEach(function (p) { if (p[1] > rMax) rMax = p[1]; });
+  const kCam = on ? Math.min(0.92, (252 - (toolKind ? 124 : 94)) / ((252 - yRim + heap) * fit), (toolKind ? 96 : 126) / ((2 * rMax + hw) * fit)) : 1;
+  const fk = fit * kCam, txCam = on ? (toolKind ? -54 - hw * fk / 2 : -8 - hw * fk / 4) : 0;
+  const SX = function (x) { return 120 + txCam + (x - 120) * fk; }, SY = function (y) { return 252 + (y - 252) * fk; };   // 杯子坐标 → 镜头拉远时的舞台坐标
+  const ryStage = rRim * TILT * fk;                                           // 杯口那一圈在舞台上有多“厚”：出酒口要悬在它上面，不碰杯沿
+  const lip = { x: SX(CX + 2), y: Math.min(SY(yRim) - 15 - ryStage * 0.7, SY(yS - heap) - 9) };            // 量酒器、酒瓶的出酒口对准这里
+  const lipTool = { x: lip.x, y: Math.min(SY(yRim) - 20 - ryStage * 0.8, SY(yS - heap) - 12) - (PR && PR.strain === 'fine' ? 16 : 0) };
+  const lipK = { x: lip.x, y: lip.y - 12 };                                   // 水壶的壶身比壶嘴低，壶嘴再抬高一点
+  const yOf = function (L) { return 252 + (L.y + 3 - 252) / fk; };            // 出酒口在杯子坐标里的高度：酒流从这里开始
+  const toolsG = S('g');                                                      // 工具：舞台坐标，画在杯子前面
+  const tG = 0;                                                               // 杯子一开场就落下
+  let scene = null, tRinse = -1, tMud = -1, tAg = -1, dAg = 0, jig0 = -1, nJig = 0, tToolEnd = 0;
+  let tc = tG + 0.5;                                                          // 杯子落稳了
+  if (PR && PR.rinse) { tRinse = tc + 0.3; tc += 1.2; }                       // 洗杯：倒一点苦艾酒，在杯壁上挂一层
+  const tBits = tc - 0.14;                                                    // 捣压用的青柠、薄荷、方糖落进杯里
+  if (has('inlime') || has('inmint') || has('sugarcube')) tc += 0.36;
+  if (PR && PR.mudGlass) { tMud = tc; tc += 1.0; }
+  const dump = !!PR && (PR.strain === 'dump' || PR.blend === 'flash');        // 连冰一起倒的：冰跟着酒进杯
+  const iceT = nIce ? Math.min(nIce, 9) * 0.05 + 0.3 : 0;
+  let tIce = on ? tc - 0.06 : 0.44, tPour = 0.36;
+  if (toolKind) {
+    const big = pourRows(c).sort(function (a, b) { return b.ml - a.ml; })[0];
+    scene = filmTool(toolKind, { uid: uid, M: lipTool, liq: mainC, cols: toolColors(c), ice: PR.blend === 'noice' ? '' : toolKind === 'blender' || PR.whip ? 'shards' : 'cubes',
+      dry: PR.dry, whip: PR.whip, mud: PR.mudTin, fine: PR.strain === 'fine', flash: PR.blend === 'flash', heat: big, t0: PR.rinse ? tc - 0.3 : 0 });
+    add(toolsG, scene.g);
+    tPour = Math.max(scene.tReady, tc + iceT);
+    tIce = Math.max(tc - 0.06, tPour - iceT - 0.5);                           // 出品的杯子在开倒之前才加冰
+  } else if (on) tPour = tc + (dump ? 0 : iceT);
+  if (dump) tIce = tPour + 0.22;
+
+  /* 倒酒：每一层分几步涨上来，每一步一个来源（tool 工具 / jig 量酒器 / bottle 酒瓶 / kettle 水壶 / none 自己浮上来的泡沫） */
   let tt = tPour;
-  layers.forEach(function (l, i) {
-    l.t0 = tt;
-    l.dur = twoPhase && !l.foam ? 1.4 : n2(0.38 + 0.62 * Math.sqrt(l.f));
-    tt += l.dur + (i < layers.length - 1 ? 0.08 : 0);
-  });
-  const tFull = opaque ? tPour + 0.85 : tt;                                   // 酒倒满
-  const tDone = tFull + (over ? 0.6 : 0) + (crown ? 0.7 : 0);                 // 颜色、泡沫都到位
+  const stepDur = function (f) { return n2(0.42 + 0.62 * Math.sqrt(f)); };
+  const agDur = function () { return PR.agit === 'stir' ? 1.05 : PR.agit === 'lift' ? 0.62 : PR.agit === 'brief' ? 0.7 : 0.92; };
+  const real = layers.filter(function (l) { return !l.foam; });
+  if (!on) layers.forEach(function (l) { l.steps = [{ f: 1, t0: 0, dur: 1, src: 'none' }]; });
+  else if (scene) {
+    /* 壶里的酒一口气倒完；带气的等工具退场以后用瓶子加满；漂在上面的那一层也另外倒 */
+    layers.forEach(function (l) {
+      if (l.foam) { l.steps = [{ f: 1, t0: tt, dur: 0.5, src: tToolEnd ? 'none' : 'tool' }]; tt += 0.5; }
+      else if (l !== real[0]) {
+        if (!tToolEnd) tToolEnd = tt;
+        const fl = PR.after === 'float';
+        l.steps = [{ f: 1, t0: tt + (fl ? 0.74 : 0.2), dur: 0.7, src: fl ? 'bottle' : 'none', color: l.c }];
+        tt = l.steps[0].t0 + 0.7;
+      } else if (twoPhase && PR.top) {
+        l.steps = [{ f: 0.5, t0: tt, dur: 0.9, src: 'tool' }, { f: 0.5, t0: tt + 0.9 + 0.74, dur: 0.95, src: 'bottle', id: PR.top, color: ING[PR.top] ? ING[PR.top][2] : l.c, fizzy: 1 }];
+        tToolEnd = tt + 0.9;
+        tt += 0.9 + 0.74 + 0.95;
+      } else { const d = stepDur(l.f); l.steps = [{ f: 1, t0: tt, dur: d, src: 'tool' }]; tt += d + 0.04; }
+    });
+    if (!tToolEnd) tToolEnd = tt;
+  } else if (real.length > 1) {
+    /* 分层的酒：一层一只瓶子 */
+    layers.forEach(function (l) {
+      if (l.foam) { l.steps = [{ f: 1, t0: tt, dur: 0.5, src: 'none' }]; tt += 0.5; return; }
+      const d = stepDur(l.f) + 0.1;
+      tt += l === real[0] ? 0.44 : 0.64;
+      l.steps = [{ f: 1, t0: tt, dur: d, src: l === real[0] && PR.hot === 'pour' ? 'kettle' : 'bottle', color: l.grad ? l.grad[0][1] : l.c }];
+      tt += d;
+      /* 底下那一层倒好就搅（爱尔兰咖啡先把糖搅化），上面漂的那一层倒了以后不再动 */
+      if (l === real[0] && PR.main !== 'layer' && PR.agit !== 'none') { tAg = tt + 0.42; dAg = agDur(); tt = tAg + dAg + 0.06; }
+    });
+  } else {
+    /* 直接在杯里兑：量酒器倒烈酒（连着倒几次），瓶子倒果汁和带气的，水壶倒热的 */
+    const steps = [];
+    buildSources(c, PR, over && PR.after ? over.grad[over.kind === 'sink' ? over.grad.length - 1 : 0][1] : null).forEach(function (sr) {
+      if (sr.src === 'jig') {
+        if (jig0 < 0) { tt += 0.3; jig0 = tt; }
+        steps.push({ f: sr.f, t0: jig0 + nJig * JIG_T + JIG_LEAD, dur: JIG_POUR + 0.06, src: 'jig', color: sr.color });
+        nJig++;
+        tt = jig0 + nJig * JIG_T;
+      } else {
+        const d = n2(0.5 + 0.6 * sr.f);
+        tt += steps.length ? 0.6 : 0.44;
+        steps.push({ f: sr.f, t0: tt, dur: d, src: sr.src, id: sr.id, color: sr.color, fizzy: sr.fizzy });
+        tt += d;
+      }
+    });
+    layers.forEach(function (l) { if (l.foam) { l.steps = [{ f: 1, t0: tt, dur: 0.5, src: 'none' }]; tt += 0.5; } else l.steps = steps; });
+  }
+  layers.forEach(function (l) { const a = l.steps[0], b = l.steps[l.steps.length - 1]; l.t0 = a.t0; l.dur = b.t0 + b.dur - a.t0; });
+  if (on) {
+    /* 来源各就各位 */
+    let bi = 0;
+    const seen = [];
+    layers.forEach(function (l) {
+      l.steps.forEach(function (st) {
+        if (seen.indexOf(st) >= 0) return;
+        seen.push(st);
+        if (st.src === 'bottle' || st.src === 'kettle') add(toolsG, pourer(st.src, st.src === 'kettle' ? lipK : lip, st.t0, st.dur, { uid: uid + 'p' + (bi++), bottle: bottleFor(st.id || '', st.color || mainC) }));
+      });
+    });
+    if (jig0 >= 0) add(toolsG, jigger(lip, jig0, nJig));
+    if (scene) { scene.bind(tPour, Math.max(0.4, tToolEnd - tPour)); scene.end(tToolEnd + 0.05); }
+    /* 加满以后还没到位的、不带分步上升的（不透明杯、渐变色的酒）：工具走了以后再用瓶子补一股 */
+    if (scene && PR.top && !twoPhase) {
+      const id = PR.top, t0 = tt + 0.74;
+      add(toolsG, pourer('bottle', lip, t0, 0.7, { uid: uid + 'pt', bottle: bottleFor(id, ING[id][2]) }));
+      real[0].late = { t0: t0, dur: 0.7, color: ING[id][2] };
+      tt = t0 + 0.7;
+    }
+    tt += 0.34;                                                               // 最后一个来源收回去、退场
+    /* 倒完以后杯里搅不搅：长搅 / 短搅 / 提一下 / 搓 */
+    if (tAg < 0 && PR.agit !== 'none' && /^(shake|stir|build|muddle)$/.test(PR.main)) {
+      tAg = tt + 0.1;                                                         // 吧勺等酒瓶收回去了才伸进来
+      dAg = agDur();
+      tt = tAg + dAg + 0.3;
+    }
+  }
+  const tFull = on ? (opaque ? Math.max(tt, tPour + 0.85) : tt) : 1;          // 酒倒满（搅完）
+  const floated = !!over && !!PR && !!PR.after;                               // 最后漂上去 / 沉下去的那一股是另外倒的
+  if (floated) add(toolsG, pourer('bottle', lip, tFull + 0.36, 0.62, { uid: uid + 'po', bottle: bottleFor('', over.grad[over.kind === 'sink' ? over.grad.length - 1 : 0][1]) }));
+  const tOver = tFull + (floated ? 0.36 : 0);
+  const tSet = tOver + (over ? (floated ? 1.1 : 0.6) : 0) + (crown && !(real[0] && real[0].late) ? 0.7 : 0);     // 颜色、泡沫都到位（跟着加满升起来的泡沫柱不用另外等）
+  const tZoom = tSet + 0.08, tDone = on ? tZoom + 0.42 : 2;                    // 镜头推近，然后上装饰
   let gi = 0;
   const popVars = function () { return on ? { '--d': n2(tDone + 0.06 + (gi++) * 0.09) + 's' } : null; };
   const pop = function (node, x, y, rot, sc) { return put(node, x, y, rot, sc, on ? 'a-plop' : null, popVars()); };
   const popAbs = function (node) { return on ? wrap(node, 'a-plop', popVars()) : node; };
-  const fall = function (node, x, y, rot, sc, k) { return put(node, x, y, rot, sc, on ? 'a-ice' : null, on ? { '--d': n2(0.34 + k * 0.06) + 's' } : null); };
+  const fall = function (node, x, y, rot, sc, k) { return put(node, x, y, rot, sc, on ? 'a-ice' : null, on ? { '--d': n2(tBits + k * 0.06) + 's' } : null); };
   const fade = function (node, t) { return on ? wrap(node, 'a-fade', { '--d': n2(t) + 's' }) : node; };
   let si = 0;                                                                // 杯口的装饰到位后轻轻晃动（绕着它搭在杯沿的那一点）
   const sway = function (node) { return on ? wrap(node, 'a-sway', { '--d': n1(tDone + 0.9 + ((si++) % 4) * 0.5) + 's' }) : node; };
-  const stream = function (t0, dur, color, yEnd) {
-    const st = S('line', { class: 'a-stream', x1: CX + 2, y1: -140, x2: CX + 2, y2: n1(yEnd), stroke: color, 'stroke-width': 7, 'stroke-linecap': 'round' });
-    st.style.setProperty('--len', n1(yEnd + 140) + 'px');
+  const stream = function (t0, dur, color, yEnd, L) {
+    const y0 = yOf(L || lip);
+    const st = S('line', { class: 'a-stream', x1: CX + 2, y1: n1(y0), x2: CX + 2, y2: n1(yEnd), stroke: color, 'stroke-width': 7, 'stroke-linecap': 'round' });
+    st.style.setProperty('--len', n1(yEnd - y0) + 'px');
     st.style.setProperty('--d', n2(t0) + 's');
     st.style.setProperty('--t', n2(dur) + 's');
     return st;
   };
+  /* 一步的酒流：带气的那一股粗一点、中间发白；搅拌机倒出来的冰沙更粗 */
+  const pourStream = function (into, st, color, yEnd) {
+    if (st.src === 'none') return;
+    const L = st.src === 'tool' ? lipTool : st.src === 'kettle' ? lipK : lip, col = mix(st.color || color, INK, st.src === 'tool' ? 0.1 : 0.2);
+    if (st.fizzy) {
+      const a = stream(st.t0 - 0.04, st.dur + 0.1, mix(st.color || color, INK, 0.25), yEnd, L);
+      a.setAttribute('stroke-width', 9.6);
+      into.appendChild(a);
+      into.appendChild(stream(st.t0 - 0.04, st.dur + 0.1, mix(st.color || color, '#ffffff', 0.62), yEnd, L));
+    } else {
+      const a = stream(st.t0 - 0.06, st.dur + 0.14, col, yEnd, L);
+      if (toolKind === 'blender' && st.src === 'tool') a.setAttribute('stroke-width', 11);
+      into.appendChild(a);
+    }
+  };
 
-  add(world, S('ellipse', { cx: CX, cy: 257, rx: n1((V.foot || radiusAt(P, yBot)) + 16), ry: 6.5, fill: INK, opacity: 0.13, class: on ? 'a-shadow' : null }));
+  const shadow = S('ellipse', { cx: CX, cy: 257, rx: n1((V.foot || radiusAt(P, yBot)) + 16), ry: 6.5, fill: INK, opacity: 0.13, class: on ? 'a-shadow' : null });
   const root = S('g', { class: on ? 'a-drop' : null });
+  if (on) { shadow.style.setProperty('--d', n2(tG) + 's'); root.style.setProperty('--d', n2(tG) + 's'); }
+  add(world, shadow);
   world.appendChild(root);
 
   /* ---- 裁剪区 ---- */
@@ -7491,8 +8427,11 @@ function drinkArt(c, o) {
       add(root, S('path', { d: hd, fill: 'none', stroke: opaque[0], 'stroke-width': 9, 'stroke-linecap': 'round' }));
     }
     add(root, S('ellipse', stroke(SW, { cx: CX, cy: yRim, rx: rRim, ry: n1(rRim * TILT), fill: opaque[2] })));
-    if (on) root.appendChild(stream(tPour - 0.1, 1, mix(mainC, INK, 0.1), yS));
-    add(root, fade(S('ellipse', { cx: CX, cy: n1(yS), rx: n1(rS), ry: n1(ryS), fill: surfC }), tPour + 0.15));
+    if (on) {
+      real[0].steps.forEach(function (st) { pourStream(root, st, mainC, yS); });
+      if (real[0].late) pourStream(root, { src: 'bottle', fizzy: 1, t0: real[0].late.t0, dur: real[0].late.dur, color: real[0].late.color }, mainC, yS);
+    }
+    add(root, fade(S('ellipse', { cx: CX, cy: n1(yS), rx: n1(rS), ry: n1(ryS), fill: surfC }), tPour + 0.3));
   } else {
     /* ---- 透明玻璃杯 ---- */
     if (V.stem) {
@@ -7510,19 +8449,22 @@ function drinkArt(c, o) {
     add(root, S('path', Object.assign({ d: bowlD(P, 0, yRim, yBot, 'back') }, GLASS)));
     add(root, S('path', stroke(SW * 0.7, { d: rimArc(1), fill: 'none' })));
 
-    /* 酒流：每一层各倒一次；带气的酒先倒基酒，再用更浅的一股加满 */
-    if (on) layers.forEach(function (Ly) {
-      const col = mix(Ly.grad ? Ly.grad[Math.floor(Ly.grad.length / 2)][1] : Ly.c, INK, 0.1);
-      if (twoPhase && !Ly.foam) {
-        root.appendChild(stream(Ly.t0 - 0.12, Ly.dur * 0.36 + 0.16, col, yBotIn - 3));
-        const st = stream(Ly.t0 + Ly.dur * 0.44, Ly.dur * 0.56 + 0.1, mix(Ly.c, INK, 0.22), yBotIn - 3);
-        st.setAttribute('stroke-width', 9.6);
-        root.appendChild(st);
-        root.appendChild(stream(Ly.t0 + Ly.dur * 0.44, Ly.dur * 0.56 + 0.1, mix(Ly.c, '#ffffff', 0.62), yBotIn - 3));
-      } else root.appendChild(stream(Ly.t0 - 0.12, Ly.dur + 0.2, col, yBotIn - 3));
-    });
-    /* 最后漂上去 / 沉下去的那一股（奶油、黑朗姆、红石榴糖浆……）只倒到液面 */
-    if (on && over) root.appendChild(stream(tFull - 0.08, 0.78, mix(over.grad[over.kind === 'sink' ? over.grad.length - 1 : 0][1], INK, 0.08), yS + 2));
+    /* 酒流：每一步一股，从出酒口落进杯里；分层的酒从第二层起落在勺背上 */
+    if (on) {
+      const seen = [];
+      layers.forEach(function (Ly) {
+        const col = Ly.grad ? Ly.grad[Math.floor(Ly.grad.length / 2)][1] : Ly.c;
+        Ly.steps.forEach(function (st) {
+          if (seen.indexOf(st) >= 0) return;
+          seen.push(st);
+          pourStream(root, st, col, Ly !== real[0] && !Ly.foam && (PR.main === 'layer' || PR.after === 'float') ? yS - 2 : yBotIn - 3);
+        });
+        if (Ly.late) pourStream(root, { src: 'bottle', fizzy: 1, t0: Ly.late.t0, dur: Ly.late.dur, color: Ly.late.color }, col, yS + 2);
+      });
+      /* 最后漂上去 / 沉下去的那一股（奶油、黑朗姆、红石榴糖浆……）只倒到液面 */
+      if (floated) root.appendChild(stream(tOver - 0.04, 0.7, mix(over.grad[over.kind === 'sink' ? over.grad.length - 1 : 0][1], INK, 0.12), yS + 2));
+      if (tRinse >= 0) root.appendChild(stream(tRinse - 0.04, 0.4, '#9cc45a', yBotIn - 3));
+    }
 
     /* 酒液：每一层有自己的上升动画，上一层到位后下一层才开始 */
     if (body === 'clear') {
@@ -7543,7 +8485,7 @@ function drinkArt(c, o) {
       if (over && !i) {
         /* 渐变叠层：静态时直接盖住主体色；动画里等酒倒满之后才慢慢显出来 */
         add(defs, S('linearGradient', { id: uid + 'o', gradientUnits: 'userSpaceOnUse', x1: 0, y1: n1(yt), x2: 0, y2: n1(yb) }, stops(over.grad)));
-        add(still, fade(S('rect', { x: CX - 110, y: n1(yt), width: 220, height: n1(hL + deep), fill: 'url(#' + uid + 'o)' }), tFull + 0.04));
+        add(still, fade(S('rect', { x: CX - 110, y: n1(yt), width: 220, height: n1(hL + deep), fill: 'url(#' + uid + 'o)' }), tOver + 0.1));
         if (over.kind === 'bleed' || has('swirl')) {
           /* 从上往下渗的几缕颜色（淋在碎冰上的利口酒、漂在咖啡酒上的奶油） */
           const rr = prng(hashStr(c.id) + 11), bleed = over.kind === 'bleed', y0 = bleed ? yt : yt + hL * 0.3;
@@ -7551,7 +8493,7 @@ function drinkArt(c, o) {
           for (let k = 0; k < 4; k++) {
             const x = CX + (-0.62 + k * 0.41 + (rr() - 0.5) * 0.14) * rIn(y0 + 10), len = (yb - y0) * (0.42 + rr() * 0.45), s = rr() < 0.5 ? -1 : 1;
             const p = S('path', { d: 'M' + n1(x) + ' ' + n1(y0 - 2) + 'q' + 5 * s + ' ' + n1(len * 0.3) + ' 0 ' + n1(len * 0.55) + 't' + -3 * s + ' ' + n1(len * 0.45), 'stroke-width': n1(4 + rr() * 4) });
-            add(tg, on ? wrap(p, 'a-drip', { '--d': n2(tFull + 0.1 + k * 0.09) + 's' }) : p);
+            add(tg, on ? wrap(p, 'a-drip', { '--d': n2(tOver + 0.16 + k * 0.09) + 's' }) : p);
           }
           add(still, tg);
         }
@@ -7566,7 +8508,7 @@ function drinkArt(c, o) {
         const e = { cx: CX, cy: n1(yt), rx: n1(rT), ry: n1(ryT) };
         if (over && !Ly.foam) {
           add(surf, S('ellipse', Object.assign({ fill: mix(over.base, '#ffffff', 0.3) }, e)));
-          add(surf, fade(S('ellipse', Object.assign({ fill: surfC }, e)), tFull + 0.04));
+          add(surf, fade(S('ellipse', Object.assign({ fill: surfC }, e)), tOver + 0.1));
           add(surf, S('ellipse', stroke(SW * 0.5, Object.assign({ fill: 'none', 'stroke-opacity': 0.5 }, e))));
         } else add(surf, S('ellipse', stroke(SW * 0.5, Object.assign({ fill: surfC, 'stroke-opacity': 0.5 }, e))));
         if (Ly.foam && A.foamTop === 'bubbly') {
@@ -7585,14 +8527,19 @@ function drinkArt(c, o) {
         }
       }
       add(defs, S('clipPath', { id: uid + 'l' + i }, S('rect', { x: -60, y: n1(yt), width: 360, height: 420 })));
-      const cls = on ? (twoPhase && !Ly.foam ? 'a-rise2' : 'a-rise') : null;
-      const rise = S('g', { class: cls }, S('g', { 'clip-path': 'url(#' + uid + 'l' + i + ')' }, S('g', { class: cls ? cls + '-c' : null }, still)),
-        on && last ? wrap(surf, 'a-settle', { '--d': n2(Ly.t0 + Ly.dur - 0.08) + 's' }) : surf);
+      /* 上升：一步一层包装（外层往上移，里层反着移回去，裁剪窗跟着外层走），几步的位移加起来就是整层的高度 */
+      let rise;
       if (on) {
-        rise.style.setProperty('--h', n1(hL + (i ? 0 : ryT + SW + 8)) + 'px');
-        rise.style.setProperty('--d', n2(Ly.t0) + 's');
-        rise.style.setProperty('--t', n2(Ly.dur) + 's');
-      }
+        const Htot = hL + (i ? 0 : ryT + SW + 8), wr = [];
+        let inner = still;
+        Ly.steps.forEach(function (st, k) {
+          const v = { '--h': n1(st.f * Htot) + 'px', '--d': n2(st.t0) + 's', '--t': n2(st.dur) + 's' };
+          inner = act(k ? 'a-step-c' : 'a-rise-c', v, inner);
+          wr.push([k ? 'a-step' : 'a-rise', v]);
+        });
+        rise = [S('g', { 'clip-path': 'url(#' + uid + 'l' + i + ')' }, inner), last ? wrap(surf, 'a-settle', { '--d': n2(Ly.t0 + Ly.dur - 0.08) + 's' }) : surf];
+        for (let k = wr.length - 1; k >= 0; k--) rise = act(wr[k][0], wr[k][1], rise);
+      } else rise = S('g', null, S('g', { 'clip-path': 'url(#' + uid + 'l' + i + ')' }, S('g', null, still)), surf);
       inGlass.appendChild(rise);
       yb = yt;
     });
@@ -7608,7 +8555,9 @@ function drinkArt(c, o) {
         [[-0.5, 0.3, -40], [0.45, 0.48, 35], [-0.3, 0.66, 150], [0.35, 0.85, -120]].forEach(function (p, k) { add(inGlass, fall(gLeaf(), CX + rS * p[0], yS + H * p[1], p[2], 0.62, k + 1)); });
         break;
       case 'sugarcube': add(inGlass, fall(gSugarCube(), CX, yBotIn - 12, 14, Math.min(1, rIn(yBotIn - 12) / 8), 0)); break;
-      case 'inshot': add(inGlass, fall(gShotGlass('#c7741f'), CX + 4, yBotIn - 3, 9, Math.min(1.25, rIn(yBotIn - 18) / 13), 0)); break;      // 连杯沉在杯底的一小杯威士忌
+      case 'inshot':                                                    // 连杯沉在杯底的一小杯威士忌：啤酒倒好以后才沉进去
+        add(inGlass, put(gShotGlass('#c7741f'), CX + 4, yBotIn - 3, 9, Math.min(1.25, rIn(yBotIn - 18) / 13), on ? 'a-ice' : null, on ? { '--d': n2(tFull + 0.05) + 's', '--from': n1(yS - yBotIn - 30) + 'px' } : null));
+        break;
       case 'slice': add(inGlass, pop(gHalf(t.k), CX - rS * 0.34, yS + 12, -26, Math.min(1.15, rS / 30))); break;
       case 'cherry':
         if (t.at === 'in') {                                              // 沉在杯底：dark = 不带梗的酒渍樱桃
@@ -7639,6 +8588,7 @@ function drinkArt(c, o) {
     let node = p[4] === 'sphere' ? gSphere(p[2]) : p[4] === 'spear' ? gSpear(p[2], H * 0.93 + 7) : p[4] === 'shard' ? gShard(p[2], shardRnd, !inIce) : gIce(p[2]);
     if (p[3]) node = S('g', { transform: 'rotate(' + n1(p[3]) + ')' }, node);
     if (on && inIce) {
+      if (tAg >= 0 && A.ice !== 'crushed' && PR.agit !== 'lift') node = wrap(node, 'a-orbit', { '--d': n2(tAg + 0.05) + 's', '--t': n2(dAg / (PR.agit === 'stir' ? 3 : 2)) + 's', '--n': PR.agit === 'stir' ? 3 : 2, '--a': (i % 2 ? -3 : 3) + 'px' });   // 吧勺搅的时候冰块跟着转
       node = wrap(node, 'a-bob', { '--d': n1(tFull + (i % 5) * 0.4) + 's' });
       if (rest) node = wrap(node, 'a-float', { '--rest': n1(rest) + 'px', '--d': n2(tPour + 0.2) + 's' });
     }
@@ -7722,6 +8672,8 @@ function drinkArt(c, o) {
       case 'twist':
         /* @in：挤过以后丢进杯里的皮卷，斜靠在酒里；默认挂在杯沿 */
         if (at === 'in') add(inGlass, pop(gTwist(k), CX + rS * 0.14, yS + 3, 34, Math.min(0.85, rS / 36)));
+        /* 杯沿右边已经搭了一片宽果皮的时候，皮卷挂到左边去，不叠在一起 */
+        else if (G.some(function (x) { return x.n === 'swath' && !x.at; })) add(topG, pop(sway(S('g', { transform: 'scale(-1 1)' }, gTwist(k))), CX - rRim * 0.88, yRim - 5, 8, rimScale));
         else add(topG, pop(sway(gTwist(k)), CX + rRim * 0.88, yRim - 5, -8, rimScale));
         break;
       case 'swath':
@@ -7811,10 +8763,47 @@ function drinkArt(c, o) {
     }
   });
 
+  /* ---- 伸进杯里的工具：捣棒（倒酒以前，整根看得见）；吧勺、搓棒、引流的勺子（倒酒以后，只露出液面以上的一截） ---- */
+  const inPre = S('g'), inPost = S('g', { 'clip-path': 'url(#' + uid + 'u)' });
+  if (on) {
+    const u = 1 / fk;                                                        // 舞台上的 1 个单位在杯子坐标里有多长
+    const dropIn = function (node, x, y, t0, t1, rot) {                      // t0 落进杯里，t1 拿出去
+      return S('g', { transform: 'translate(' + n1(x) + ' ' + n1(y) + ')' + (rot ? ' rotate(' + rot + ')' : '') },
+        act('a-up', { '--d': n2(t1) + 's', '--up': n1(-34 * u) + 'px' }, act('a-ice', { '--d': n2(t0) + 's', '--from': n1(-46 * u) + 'px' }, node)));
+    };
+    if (tMud >= 0) {
+      const y = opaque ? yS + 34 : yBotIn - 4;
+      add(inPre, dropIn(act('a-press', { '--d': n2(tMud + 0.2) + 's', '--t': '.72s', '--lift': n1(-10 * u) + 'px' }, gMuddler(y - yRim + 48 * u, u)), CX, y, tMud - 0.06, tMud + 0.95));
+    }
+    if (tAg >= 0) {
+      const x = CX + rS * 0.1, y = opaque ? yS + 30 : yBotIn - 5, len = y - yRim + 54 * u;
+      let tool;
+      if (PR.agit === 'swizzle') tool = act('a-spin', { '--d': n2(tAg) + 's', '--t': n2(dAg / 4) + 's', '--n': 4 }, gSwizzle(len, u));
+      else if (PR.agit === 'lift' || (PR.agit === 'brief' && PR.top)) tool = act('a-lift', { '--d': n2(tAg + 0.08) + 's', '--t': n2(dAg - 0.12) + 's', '--up': n1(-Math.min(26 * u, (y - yS) * 0.55)) + 'px' }, gBarSpoon(len, u));
+      else {
+        const n = PR.agit === 'stir' ? 3 : 2;
+        tool = vars(act('a-stir', { '--d': n2(tAg) + 's', '--t': n2(dAg / n) + 's', '--n': n, '--a': n1(Math.min(9 * u, rS * 0.3)) + 'px' }, gBarSpoon(len, u)), { 'transform-origin': '0px ' + n1(yRim - y) + 'px' });
+      }
+      add(inPost, dropIn(tool, x, y, tAg - 0.22, tAg + dAg + 0.03));
+    }
+    /* 勺背引流：分层的酒从第二层起、最后漂上去的那一层，都顺着贴在液面上的勺子流下去 */
+    const lay = real.length > 1 && (PR.main === 'layer' || PR.after === 'float');
+    if (lay || (floated && PR.after === 'float')) {
+      const t0 = lay ? real[1].t0 - 0.5 : tOver - 0.34, t1 = lay ? tFull + 0.05 : tOver + 0.74;
+      add(inPost, dropIn(gBarSpoon(yS - yRim + 58 * u, u), CX + 2, yS - 0.5, t0, t1, -26));
+    }
+    if (tRinse >= 0) {
+      add(toolsG, pourer('bottle', lip, tRinse, 0.3, { uid: uid + 'pr', bottle: bottleFor('', '#bfe08a') }));
+      if (!opaque) add(inGlass, act('a-film', { '--d': n2(tRinse + 0.12) + 's' }, S('path', { d: bowlD(P, wall, yRim, yBotIn, 'back'), fill: '#cfe89a' })));
+    }
+  }
+
   /* ---- 杯体前景 ---- */
+  let outline = null;
   add(root, inGlass);
   add(root, domeG);
-  if (!crown) add(root, upG);
+  add(root, inPre);
+  if (!crown) add(root, [upG, inPost]);
   if (opaque) {
     const bodyD = bowlD(P, 0, yRim, yBot, 'front');
     add(defs, S('clipPath', { id: uid + 'b' }, S('path', { d: bodyD })));
@@ -7858,9 +8847,11 @@ function drinkArt(c, o) {
       }
     }
     add(root, shade);
-    add(root, S('path', stroke(SW, { d: bodyD, fill: 'none' })));
+    outline = S('path', stroke(SW, { d: bodyD, fill: 'none' }));
+    add(root, outline);
   } else {
-    add(root, S('path', stroke(SW, { d: bowlD(P, 0, yRim, yBot, 'open'), fill: 'none' })));
+    outline = S('path', stroke(SW, { d: bowlD(P, 0, yRim, yBot, 'open'), fill: 'none' }));
+    add(root, outline);
     add(root, S('path', stroke(SW, { d: rimArc(0), fill: 'none' })));
     /* 玻璃高光 */
     const hy0 = Math.max(yRim + 9, yS + 9), hy1 = hy0 + (yBot - hy0) * 0.4;
@@ -7890,9 +8881,9 @@ function drinkArt(c, o) {
         S('path', stroke(SW * 0.8, { d: cd, fill: A.foam })),
         S('ellipse', stroke(SW * 0.5, { cx: CX, cy: n1(yC), rx: n1(rC), ry: n1(ryC), fill: mix(A.foam, '#ffffff', 0.5), 'stroke-opacity': 0.5 })),
         S('rect', { x: n1(CX + rC * 0.5), y: n1(yC + 2), width: n1(rC * 0.5 - 2), height: crown, fill: '#000000', opacity: 0.06 }));
-      add(root, on ? wrap(cg, 'a-crown', { '--d': n2(tFull) + 's' }) : cg);
+      add(root, on ? wrap(cg, 'a-crown', { '--d': n2(real[0].late ? real[0].late.t0 + 0.2 : tFull) + 's' }) : cg);
       add(root, S('path', stroke(SW, { d: rimArc(0), fill: 'none' })));
-      add(root, upG);
+      add(root, [upG, inPost]);
     }
   }
   /* 盐边 / 糖边（@half 只做靠前的半圈） */
@@ -7901,16 +8892,24 @@ function drinkArt(c, o) {
     const rx = n1(rRim), ry = n1(rRim * TILT);
     const d = rim.at === 'half' ? rimArc(0)
       : 'M' + n1(CX - rx) + ' ' + yRim + 'A' + rx + ' ' + ry + ' 0 1 0 ' + n1(CX + rx) + ' ' + yRim + 'A' + rx + ' ' + ry + ' 0 1 0 ' + n1(CX - rx) + ' ' + yRim + 'Z';
-    add(root, S('path', { d: d, fill: 'none', stroke: INK, 'stroke-width': n1(6 + SW * 0.9), 'stroke-linecap': 'round' }));
     const blue = rim.k === 'blue', red = rim.k === 'red';                     // 蓝：蓝橙利口酒染过的盐边（“珊瑚边”）；红：辣椒盐边
-    add(root, S('path', { d: d, fill: 'none', stroke: blue ? '#bfe3f6' : red ? '#f6cdb8' : '#ffffff', 'stroke-width': 6, 'stroke-linecap': 'round' }));
-    add(root, S('path', { d: d, fill: 'none', stroke: blue ? '#3f9bd8' : red ? '#d5331f' : rim.n === 'sugar' ? '#ecd9a8' : '#c9c2b6', 'stroke-width': 2.2, 'stroke-dasharray': '0.1 5.2', 'stroke-linecap': 'round' }));
+    add(root, fade(S('g', null,                                               // 杯子一落稳就先蘸好杯边
+      S('path', { d: d, fill: 'none', stroke: INK, 'stroke-width': n1(6 + SW * 0.9), 'stroke-linecap': 'round' }),
+      S('path', { d: d, fill: 'none', stroke: blue ? '#bfe3f6' : red ? '#f6cdb8' : '#ffffff', 'stroke-width': 6, 'stroke-linecap': 'round' }),
+      S('path', { d: d, fill: 'none', stroke: blue ? '#3f9bd8' : red ? '#d5331f' : rim.n === 'sugar' ? '#ecd9a8' : '#c9c2b6', 'stroke-width': 2.2, 'stroke-dasharray': '0.1 5.2', 'stroke-linecap': 'round' })), tG + 0.42));
   }
   add(root, topG);
+  if (on) {
+    vars(cam, { '--cx': txCam + 'px', '--ck': Math.round(kCam * 1000) / 1000, '--d': n2(tZoom) + 's' });
+    svg.appendChild(toolsG);
+  }
 
+  if (on) svg.filmEnd = n2(tDone + 0.06 + gi * 0.09 + 0.4);                     // 这一段演完要多久（秒）：舞台上的按钮据此从“跳到成品”变回“再调一次”
+  /* 给检查脚本（mobile/check_art.py）留的把手：各层节点和杯子的内壁 */
+  svg.film = { tools: toolsG, cam: cam, root: root, inGlass: inGlass, topG: topG, upG: upG, outline: outline, fit: fit, yRim: yRim, yBotIn: yBotIn, yS: yS, rIn: rIn, tZoom: tZoom, opaque: !!opaque };
   if (o.stage && on) {
     const sx = Math.min(98, rRim * fit + 30);
-    sparkles(svg, [[CX - sx, 252 - (252 - yRim) * fit + 6, 9], [CX + sx + 4, 252 - (252 - yRim) * fit * 0.62, 7], [CX + sx - 10, Math.max(22, 252 - (252 - yRim) * fit - 34), 6]], on);
+    sparkles(svg, [[CX - sx, 252 - (252 - yRim) * fit + 6, 9], [CX + sx + 4, 252 - (252 - yRim) * fit * 0.62, 7], [CX + sx - 10, Math.max(22, 252 - (252 - yRim) * fit - 34), 6]], on, tDone + 0.2);
   }
   return svg;
 }
@@ -8389,6 +9388,7 @@ const $ = function (id) { return document.getElementById(id); };
 const ICON = {
   back: 'M14.5 5.5L8 12l6.5 6.5',
   replay: 'M4.5 12a7.5 7.5 0 1 0 2.4-5.5M4.5 4.5v4.6h4.6',
+  skip: 'M6 5.5l9 6.5-9 6.5zM18.5 5.5v13',
   tag: 'M4 4.5h7.2l8.3 8.3-7 7L4 11.5zM8.2 8.6h.01',
   arrow: 'M9.5 5.5L16 12l-6.5 6.5',
   down: 'M5.5 9.5L12 16l6.5-6.5'
@@ -8552,19 +9552,51 @@ function goHome(silent, keepPos) {              // keepPos：回到上次离开�
   show(homeNode, 'home', null, '', silent === true, keepPos === true);
 }
 
-function stageFor(build, tint, label) {
+/* 舞台：插画 + 右下角的按钮。
+ * 鸡尾酒的插画会照做法演一遍（art.filmEnd 是这一段的时长，秒）：演的时候按钮是“跳到成品”，点画面也一样；演完变回“再调一次”。 */
+function stageFor(build, tint, label, skipLabel) {
   const stage = H('div', { class: 'stage' });
   stage.style.setProperty('--tint', tint);
+  const btn = REDUCED ? null : H('button', { class: 'stage-btn', type: 'button' });
+  let art = null, timer = 0, playing = false;
+  const setBtn = function (skipMode) {
+    playing = skipMode;
+    if (!btn) return;
+    const text = skipMode ? skipLabel : label;
+    btn.setAttribute('aria-label', text);
+    btn.title = text;
+    btn.textContent = '';
+    btn.appendChild(icon(skipMode ? ICON.skip : ICON.replay, 20));
+  };
   const mount = function () {
-    const old = stage.querySelector('.art');
-    if (old) old.remove();
-    stage.insertBefore(build(), stage.firstChild);
+    clearTimeout(timer);
+    if (art) art.remove();
+    art = build();
+    stage.insertBefore(art, stage.firstChild);
+    const end = !REDUCED && skipLabel ? art.filmEnd : 0;
+    setBtn(!!end);
+    if (end) timer = setTimeout(function () { setBtn(false); }, end * 1000);
+  };
+  /* 跳到成品：一次性的动画直接到结尾，循环的小动作（气泡、浮冰、热气）从现在开始 */
+  const skip = function () {
+    clearTimeout(timer);
+    try {
+      art.getAnimations({ subtree: true }).forEach(function (a) {
+        const tm = a.effect.getComputedTiming();
+        if (tm.iterations === Infinity) { if ((a.currentTime || 0) < tm.delay) a.currentTime = tm.delay; } else a.finish();
+      });
+    } catch (e) { /* 浏览器没有这个接口：让它自己演完 */ }
+    setBtn(false);
   };
   mount();
-  if (!REDUCED) stage.appendChild(H('button', { class: 'stage-btn', type: 'button', 'aria-label': label, title: label, onclick: mount }, icon(ICON.replay, 20)));
+  if (btn) {
+    btn.addEventListener('click', function () { if (playing) skip(); else mount(); });
+    stage.addEventListener('click', function () { if (playing) skip(); });
+  }
   /* 外面再套一层 .stage-rail：它占住第一行左边那一格并撑满行高，.stage-col 在它里面 sticky。
-   * 直接让网格项 sticky 的话，Chrome 会让它在整个网格容器里一直粘着，滚到下面通栏的酒款格子时垫在卡片后面。 */
-  return H('div', { class: 'stage-rail' }, H('div', { class: 'stage-col' }, stage));
+   * 直接让网格项 sticky 的话，Chrome 会让它在整个网格容器里一直粘着，滚到下面通栏的酒款格子时垫在卡片后面。
+   * 按钮放在 .stage 外面、挂在它的右下角：.stage 要裁掉转动的光芒，按钮在里面的话小舞台上会挡住杯子。 */
+  return H('div', { class: 'stage-rail' }, H('div', { class: 'stage-col' }, stage, btn));
 }
 function crumb() {
   return H('div', { class: 'crumb' }, H('button', { class: 'btn', type: 'button', onclick: function () { goHome(false, true); } }, icon(ICON.back, 18), T('all')));
@@ -8743,7 +9775,7 @@ function openCocktail(id, silent) {
   const c = COCKTAIL_BY_ID[id];
   if (!c) return;
   const reopen = quiet && REL_OPEN.id === c.id ? REL_OPEN.key : null;      // 切换语言重画时，底部展开的那一栏保持展开
-  const stageCol = stageFor(function () { return drinkArt(c, { stage: true, anim: !REDUCED }); }, drinkTint(c), T('pourAgain'));
+  const stageCol = stageFor(function () { return drinkArt(c, { stage: true, anim: !REDUCED }); }, drinkTint(c), T('pourAgain'), T('skipAnim'));
 
   const title = H('h1', { tabindex: '-1', text: nameOf(c) });
   const tags = H('div', { class: 'tags' });
@@ -8780,6 +9812,15 @@ function openCocktail(id, silent) {
     const R = recipes[sel];
     method.textContent = '';
     method.appendChild(secTitle(T('method'), many ? H('span', { class: 'tools ver', text: R.label }) : null));
+    /* 手法：这个版本从头到尾用到的操作，按先后排成一行；技法页里有说明的可以点过去 */
+    const flow = H('ol', { class: 'flow', 'aria-label': T('flowAria') });
+    prepOf(c, R.r || c).ops.forEach(function (op) {
+      const o = PREP_OP[op], gid = o[2] && GUIDE_BY_ID[o[2]] ? o[2] : null;
+      flow.appendChild(H('li', null, gid
+        ? H('button', { class: 'tag tag-go', type: 'button', title: T('techTitle'), onclick: function () { openGuide(gid); } }, pair(o), icon(ICON.arrow, 12))
+        : H('span', { class: 'tag', text: pair(o) })));
+    });
+    method.appendChild(flow);
     method.appendChild(H('ol', { class: 'steps' }, R.steps.map(function (t, i) {
       const li = H('li', null, H('span', { class: 'num', 'aria-hidden': 'true', text: String(i + 1) }), H('p', { text: t }));
       li.style.setProperty('--i', i);
